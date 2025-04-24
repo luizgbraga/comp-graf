@@ -50,18 +50,32 @@ class ProjectileManager:
             start_pos = self.game.camera.getPos(self.game.render)
             direction = self.game.camera.getQuat(self.game.render).getForward()
         else:
-            # In other modes, shoot from the weapon position toward the center of the screen
+            # In other modes, shoot from the weapon position
             start_pos = self.game.player.weapon_holder.getPos(self.game.render)
 
-            # Get a point in the middle of the screen
+            # Get mouse position and calculate shooting direction
             if self.game.mouseWatcherNode.hasMouse():
                 mpos = self.game.mouseWatcherNode.getMouse()
                 near_point = Point3()
                 far_point = Point3()
 
+                # Get the 3D point the mouse is pointing at
                 self.game.camLens.extrude(mpos, near_point, far_point)
-                direction = far_point - near_point
-                direction.normalize()
+                
+                # Convert points to world space
+                near_point = self.game.render.getRelativePoint(self.game.camera, near_point)
+                far_point = self.game.render.getRelativePoint(self.game.camera, far_point)
+                
+                if self.game.player.camera_mode == "top-down":
+                    # In top-down mode, we need to project the mouse position onto the ground plane
+                    # and calculate direction from player to that point
+                    mouse_world_pos = Point3(far_point.getX(), far_point.getY(), start_pos.getZ())
+                    direction = mouse_world_pos - start_pos
+                    direction.normalize()
+                else:
+                    # For third-person, use the normal direction calculation
+                    direction = far_point - near_point
+                    direction.normalize()
             else:
                 # Default to forward if mouse not available
                 direction = self.game.camera.getQuat(self.game.render).getForward()

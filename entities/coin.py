@@ -2,7 +2,9 @@ import math
 import random
 
 from direct.interval.IntervalGlobal import Func, Sequence
-from panda3d.core import CardMaker, Point3
+from panda3d.core import CardMaker, Point3, NodePath
+from panda3d.core import GeomVertexFormat, GeomVertexData, Geom, GeomTriangles, GeomVertexWriter
+from panda3d.core import GeomNode
 
 
 class CoinManager:
@@ -14,14 +16,97 @@ class CoinManager:
         for _ in range(20):
             self.spawnCoinOnTerrain()
 
+    def createCoinModel(self):
+        """Create a 3D coin model using a cylinder"""
+        format = GeomVertexFormat.getV3n3c4()
+        vdata = GeomVertexData('coin', format, Geom.UHStatic)
+        
+        # Create writers for vertex data
+        vertex = GeomVertexWriter(vdata, 'vertex')
+        normal = GeomVertexWriter(vdata, 'normal')
+        color = GeomVertexWriter(vdata, 'color')
+        
+        # Coin parameters
+        radius = 0.3
+        thickness = 0.1
+        segments = 32
+        
+        # Create vertices for top and bottom faces
+        for i in range(segments):
+            angle = (i / segments) * 2 * math.pi
+            next_angle = ((i + 1) / segments) * 2 * math.pi
+            
+            # Top face vertices
+            vertex.addData3f(0, 0, thickness/2)
+            normal.addData3f(0, 0, 1)
+            color.addData4f(1.0, 0.84, 0, 1)
+            
+            vertex.addData3f(radius * math.cos(angle), radius * math.sin(angle), thickness/2)
+            normal.addData3f(0, 0, 1)
+            color.addData4f(1.0, 0.84, 0, 1)
+            
+            vertex.addData3f(radius * math.cos(next_angle), radius * math.sin(next_angle), thickness/2)
+            normal.addData3f(0, 0, 1)
+            color.addData4f(1.0, 0.84, 0, 1)
+            
+            # Bottom face vertices
+            vertex.addData3f(0, 0, -thickness/2)
+            normal.addData3f(0, 0, -1)
+            color.addData4f(1.0, 0.84, 0, 1)
+            
+            vertex.addData3f(radius * math.cos(next_angle), radius * math.sin(next_angle), -thickness/2)
+            normal.addData3f(0, 0, -1)
+            color.addData4f(1.0, 0.84, 0, 1)
+            
+            vertex.addData3f(radius * math.cos(angle), radius * math.sin(angle), -thickness/2)
+            normal.addData3f(0, 0, -1)
+            color.addData4f(1.0, 0.84, 0, 1)
+            
+            # Side vertices
+            vertex.addData3f(radius * math.cos(angle), radius * math.sin(angle), thickness/2)
+            normal.addData3f(math.cos(angle), math.sin(angle), 0)
+            color.addData4f(1.0, 0.84, 0, 1)
+            
+            vertex.addData3f(radius * math.cos(next_angle), radius * math.sin(next_angle), thickness/2)
+            normal.addData3f(math.cos(next_angle), math.sin(next_angle), 0)
+            color.addData4f(1.0, 0.84, 0, 1)
+            
+            vertex.addData3f(radius * math.cos(angle), radius * math.sin(angle), -thickness/2)
+            normal.addData3f(math.cos(angle), math.sin(angle), 0)
+            color.addData4f(1.0, 0.84, 0, 1)
+            
+            vertex.addData3f(radius * math.cos(next_angle), radius * math.sin(next_angle), thickness/2)
+            normal.addData3f(math.cos(next_angle), math.sin(next_angle), 0)
+            color.addData4f(1.0, 0.84, 0, 1)
+            
+            vertex.addData3f(radius * math.cos(next_angle), radius * math.sin(next_angle), -thickness/2)
+            normal.addData3f(math.cos(next_angle), math.sin(next_angle), 0)
+            color.addData4f(1.0, 0.84, 0, 1)
+            
+            vertex.addData3f(radius * math.cos(angle), radius * math.sin(angle), -thickness/2)
+            normal.addData3f(math.cos(angle), math.sin(angle), 0)
+            color.addData4f(1.0, 0.84, 0, 1)
+        
+        # Create triangles
+        prim = GeomTriangles(Geom.UHStatic)
+        for i in range(segments * 4):  # 4 triangles per segment
+            prim.addVertices(i*3, i*3+1, i*3+2)
+        
+        # Create the geometry
+        geom = Geom(vdata)
+        geom.addPrimitive(prim)
+        
+        # Create a node to hold the geometry
+        node = GeomNode('coin')
+        node.addGeom(geom)
+        
+        return NodePath(node)
+
     def spawnCoinOnTerrain(self):
         """Create a collectible coin on the terrain"""
-        # Create visible coin using a simple disc
-        cm = CardMaker("coin")
-        cm.setFrame(-0.3, 0.3, -0.3, 0.3)
-        coin = self.game.render.attachNewNode(cm.generate())
-        coin.setBillboardPointEye()  # Make it always face the camera
-        coin.setColor(1.0, 0.84, 0, 1)  # Gold color
+        # Create 3D coin model
+        coin = self.createCoinModel()
+        coin.reparentTo(self.game.render)
 
         # Place it randomly on the terrain
         x = random.uniform(-35, 35)
@@ -29,9 +114,11 @@ class CoinManager:
         z = 0.5  # Slightly above ground
 
         coin.setPos(x, y, z)
+        # Rotate the coin to stand upright (90 degrees around X axis)
+        coin.setHpr(0, 90, 0)
 
-        # Add a spinning animation
-        coin_spin = coin.hprInterval(2, Point3(360, 0, 0))
+        # Add a spinning animation (now spinning around the vertical axis)
+        coin_spin = coin.hprInterval(2, Point3(360, 90, 0))
         coin_spin.loop()
 
         # Add a slight up-down bounce
@@ -54,12 +141,11 @@ class CoinManager:
     def spawnFlyingCoin(self, position):
         """Create a coin that flies toward the player"""
         # Create a flying coin that moves toward the player
-        cm = CardMaker("flying_coin")
-        cm.setFrame(-0.3, 0.3, -0.3, 0.3)
-        coin = self.game.render.attachNewNode(cm.generate())
-        coin.setBillboardPointEye()  # Make it always face the camera
-        coin.setColor(1.0, 0.84, 0, 1)  # Gold color
+        coin = self.createCoinModel()
+        coin.reparentTo(self.game.render)
         coin.setPos(position)
+        # Rotate the flying coin to stand upright
+        coin.setHpr(0, 90, 0)
 
         # Create animation for the coin to fly toward the player
         coin_pos = coin.getPos()
