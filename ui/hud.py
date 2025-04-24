@@ -1,4 +1,4 @@
-from direct.gui.DirectGui import DGG, DirectButton, DirectFrame, DirectLabel
+from direct.gui.DirectGui import DirectFrame, DirectLabel
 
 
 class HUD:
@@ -53,24 +53,11 @@ class HUD:
             text_shadow=(0, 0, 0, 1),
         )
 
-        # Upgrade button
-        self.upgradeButton = DirectButton(
-            text="Upgrade to Katana (50 coins)",
-            scale=0.05,
-            pos=(0.25, 0, -0.28),
-            parent=self.frame,
-            command=game.upgradeWeapon,
-            relief=DGG.FLAT,
-            frameColor=(0.2, 0.2, 0.2, 0.8),
-            text_fg=(1, 1, 1, 1),
-            pressEffect=1,
-        )
-
         # Camera mode indicator
         self.cameraText = DirectLabel(
             text="Camera: First-Person",
             scale=0.04,
-            pos=(0.1, 0, -0.36),
+            pos=(0.1, 0, -0.26),
             parent=self.frame,
             relief=None,
             text_fg=(0.8, 0.8, 1, 1),
@@ -95,16 +82,6 @@ class HUD:
     def updateCameraText(self, camera_mode):
         """Update the camera mode display"""
         self.cameraText["text"] = f"Camera: {camera_mode}"
-
-    def disableUpgradeButton(self):
-        """Disable the upgrade button after purchasing katana"""
-        self.upgradeButton["text"] = "Weapon Fully Upgraded"
-        self.upgradeButton["state"] = DGG.DISABLED
-
-    def enableUpgradeButton(self):
-        """Enable the upgrade button for a new game"""
-        self.upgradeButton["text"] = "Upgrade to Katana (50 coins)"
-        self.upgradeButton["state"] = DGG.NORMAL
 
     def show(self):
         """Show the HUD"""

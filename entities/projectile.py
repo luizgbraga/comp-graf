@@ -61,15 +61,21 @@ class ProjectileManager:
 
                 # Get the 3D point the mouse is pointing at
                 self.game.camLens.extrude(mpos, near_point, far_point)
-                
+
                 # Convert points to world space
-                near_point = self.game.render.getRelativePoint(self.game.camera, near_point)
-                far_point = self.game.render.getRelativePoint(self.game.camera, far_point)
-                
+                near_point = self.game.render.getRelativePoint(
+                    self.game.camera, near_point
+                )
+                far_point = self.game.render.getRelativePoint(
+                    self.game.camera, far_point
+                )
+
                 if self.game.player.camera_mode == "top-down":
                     # In top-down mode, we need to project the mouse position onto the ground plane
                     # and calculate direction from player to that point
-                    mouse_world_pos = Point3(far_point.getX(), far_point.getY(), start_pos.getZ())
+                    mouse_world_pos = Point3(
+                        far_point.getX(), far_point.getY(), start_pos.getZ()
+                    )
                     direction = mouse_world_pos - start_pos
                     direction.normalize()
                 else:

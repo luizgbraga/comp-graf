@@ -14,6 +14,7 @@ class InputController:
             "right": False,
             "shoot": False,
             "switchCamera": False,
+            "weaponMenu": False,
         }
 
         # Set up key bindings
@@ -49,6 +50,8 @@ class InputController:
         self.game.accept("mouse1-up", self.updateKeyMap, ["shoot", False])
         self.game.accept("c", self.updateKeyMap, ["switchCamera", True])
         self.game.accept("c-up", self.updateKeyMap, ["switchCamera", False])
+        self.game.accept("tab", self.updateKeyMap, ["weaponMenu", True])
+        self.game.accept("tab-up", self.updateKeyMap, ["weaponMenu", False])
 
     def setupCrosshair(self):
         """Create a crosshair for aiming"""
@@ -86,6 +89,9 @@ class InputController:
 
         if key == "switchCamera" and value and self.game.gameState == "playing":
             self.player.switchCamera()
+
+        if key == "weaponMenu" and value and self.game.gameState == "playing":
+            self.game.menuManager.showWeaponMenu()
 
     def mouseTask(self, task):
         """Handle mouse movement for camera control"""

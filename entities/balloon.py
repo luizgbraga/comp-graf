@@ -2,7 +2,15 @@ import math
 import random
 
 from direct.gui.DirectGui import DirectFrame
-from panda3d.core import CardMaker, NodePath, GeomVertexFormat, GeomVertexData, GeomVertexWriter, GeomTriangles, Geom, GeomNode
+from panda3d.core import (
+    Geom,
+    GeomNode,
+    GeomTriangles,
+    GeomVertexData,
+    GeomVertexFormat,
+    GeomVertexWriter,
+    NodePath,
+)
 
 
 class BalloonManager:
@@ -24,34 +32,34 @@ class BalloonManager:
     def createEllipsoid(self, radius_x=0.5, radius_y=0.5, radius_z=0.7, segments=16):
         """Create a 3D ellipsoid mesh"""
         format = GeomVertexFormat.getV3n3c4()
-        vdata = GeomVertexData('ellipsoid', format, Geom.UHStatic)
-        
-        vertex = GeomVertexWriter(vdata, 'vertex')
-        normal = GeomVertexWriter(vdata, 'normal')
-        color = GeomVertexWriter(vdata, 'color')
-        
+        vdata = GeomVertexData("ellipsoid", format, Geom.UHStatic)
+
+        vertex = GeomVertexWriter(vdata, "vertex")
+        normal = GeomVertexWriter(vdata, "normal")
+        color = GeomVertexWriter(vdata, "color")
+
         # Generate vertices
         for i in range(segments + 1):
             lat = math.pi * (-0.5 + float(i) / segments)
             for j in range(segments + 1):
                 lng = 2 * math.pi * float(j) / segments
-                
+
                 x = radius_x * math.cos(lat) * math.cos(lng)
                 y = radius_y * math.cos(lat) * math.sin(lng)
                 z = radius_z * math.sin(lat)
-                
+
                 vertex.addData3(x, y, z)
-                
+
                 # Calculate normal
                 nx = x / radius_x
                 ny = y / radius_y
                 nz = z / radius_z
-                length = math.sqrt(nx*nx + ny*ny + nz*nz)
-                normal.addData3(nx/length, ny/length, nz/length)
-                
+                length = math.sqrt(nx * nx + ny * ny + nz * nz)
+                normal.addData3(nx / length, ny / length, nz / length)
+
                 # Add color (will be set later)
                 color.addData4(1, 1, 1, 1)
-        
+
         # Generate triangles
         prim = GeomTriangles(Geom.UHStatic)
         for i in range(segments):
@@ -60,14 +68,14 @@ class BalloonManager:
                 v2 = v1 + 1
                 v3 = (i + 1) * (segments + 1) + j
                 v4 = v3 + 1
-                
+
                 prim.addVertices(v1, v2, v3)
                 prim.addVertices(v2, v4, v3)
-        
+
         geom = Geom(vdata)
         geom.addPrimitive(prim)
-        
-        node = GeomNode('ellipsoid')
+
+        node = GeomNode("ellipsoid")
         node.addGeom(geom)
         return NodePath(node)
 
@@ -75,7 +83,7 @@ class BalloonManager:
         """Create a new balloon enemy"""
         # Create ellipsoid balloon model
         balloon_model = self.createEllipsoid()
-        
+
         # Choose random color
         color = random.choice(self.balloon_colors)
         balloon_model.setColor(*color)

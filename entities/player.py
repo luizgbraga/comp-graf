@@ -74,7 +74,34 @@ class Player:
         self.dart_gun.reparentTo(self.weapon_holder)
 
         # Katana (hidden initially)
-        self.katana = self.game.createBox(0.03, 0.8, 0.2, (0.7, 0.7, 0.7, 1))
+        # Create katana blade
+        self.katana_blade = self.game.createBox(
+            0.02, 0.8, 0.1, (0.8, 0.8, 0.8, 1)
+        )  # Silver color
+        self.katana_blade.reparentTo(self.weapon_holder)
+        self.katana_blade.setPos(0, 0.4, 0)  # Position the blade forward
+
+        # Create katana handle
+        self.katana_handle = self.game.createBox(
+            0.03, 0.2, 0.03, (0.2, 0.1, 0.1, 1)
+        )  # Dark red color
+        self.katana_handle.reparentTo(self.weapon_holder)
+        self.katana_handle.setPos(0, -0.1, 0)  # Position the handle at the back
+
+        # Create katana guard
+        self.katana_guard = self.game.createBox(
+            0.05, 0.02, 0.05, (0.3, 0.3, 0.3, 1)
+        )  # Dark gray color
+        self.katana_guard.reparentTo(self.weapon_holder)
+        self.katana_guard.setPos(
+            0, 0.1, 0
+        )  # Position the guard between blade and handle
+
+        # Group all katana parts
+        self.katana = NodePath("katana")
+        self.katana_blade.reparentTo(self.katana)
+        self.katana_handle.reparentTo(self.katana)
+        self.katana_guard.reparentTo(self.katana)
         self.katana.reparentTo(self.weapon_holder)
         self.katana.hide()
 

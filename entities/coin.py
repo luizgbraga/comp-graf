@@ -2,9 +2,16 @@ import math
 import random
 
 from direct.interval.IntervalGlobal import Func, Sequence
-from panda3d.core import CardMaker, Point3, NodePath
-from panda3d.core import GeomVertexFormat, GeomVertexData, Geom, GeomTriangles, GeomVertexWriter
-from panda3d.core import GeomNode
+from panda3d.core import (
+    Geom,
+    GeomNode,
+    GeomTriangles,
+    GeomVertexData,
+    GeomVertexFormat,
+    GeomVertexWriter,
+    NodePath,
+    Point3,
+)
 
 
 class CoinManager:
@@ -19,87 +26,117 @@ class CoinManager:
     def createCoinModel(self):
         """Create a 3D coin model using a cylinder"""
         format = GeomVertexFormat.getV3n3c4()
-        vdata = GeomVertexData('coin', format, Geom.UHStatic)
-        
+        vdata = GeomVertexData("coin", format, Geom.UHStatic)
+
         # Create writers for vertex data
-        vertex = GeomVertexWriter(vdata, 'vertex')
-        normal = GeomVertexWriter(vdata, 'normal')
-        color = GeomVertexWriter(vdata, 'color')
-        
+        vertex = GeomVertexWriter(vdata, "vertex")
+        normal = GeomVertexWriter(vdata, "normal")
+        color = GeomVertexWriter(vdata, "color")
+
         # Coin parameters
         radius = 0.3
         thickness = 0.1
         segments = 32
-        
+
         # Create vertices for top and bottom faces
         for i in range(segments):
             angle = (i / segments) * 2 * math.pi
             next_angle = ((i + 1) / segments) * 2 * math.pi
-            
+
             # Top face vertices
-            vertex.addData3f(0, 0, thickness/2)
+            vertex.addData3f(0, 0, thickness / 2)
             normal.addData3f(0, 0, 1)
             color.addData4f(1.0, 0.84, 0, 1)
-            
-            vertex.addData3f(radius * math.cos(angle), radius * math.sin(angle), thickness/2)
+
+            vertex.addData3f(
+                radius * math.cos(angle), radius * math.sin(angle), thickness / 2
+            )
             normal.addData3f(0, 0, 1)
             color.addData4f(1.0, 0.84, 0, 1)
-            
-            vertex.addData3f(radius * math.cos(next_angle), radius * math.sin(next_angle), thickness/2)
+
+            vertex.addData3f(
+                radius * math.cos(next_angle),
+                radius * math.sin(next_angle),
+                thickness / 2,
+            )
             normal.addData3f(0, 0, 1)
             color.addData4f(1.0, 0.84, 0, 1)
-            
+
             # Bottom face vertices
-            vertex.addData3f(0, 0, -thickness/2)
+            vertex.addData3f(0, 0, -thickness / 2)
             normal.addData3f(0, 0, -1)
             color.addData4f(1.0, 0.84, 0, 1)
-            
-            vertex.addData3f(radius * math.cos(next_angle), radius * math.sin(next_angle), -thickness/2)
+
+            vertex.addData3f(
+                radius * math.cos(next_angle),
+                radius * math.sin(next_angle),
+                -thickness / 2,
+            )
             normal.addData3f(0, 0, -1)
             color.addData4f(1.0, 0.84, 0, 1)
-            
-            vertex.addData3f(radius * math.cos(angle), radius * math.sin(angle), -thickness/2)
+
+            vertex.addData3f(
+                radius * math.cos(angle), radius * math.sin(angle), -thickness / 2
+            )
             normal.addData3f(0, 0, -1)
             color.addData4f(1.0, 0.84, 0, 1)
-            
+
             # Side vertices
-            vertex.addData3f(radius * math.cos(angle), radius * math.sin(angle), thickness/2)
+            vertex.addData3f(
+                radius * math.cos(angle), radius * math.sin(angle), thickness / 2
+            )
             normal.addData3f(math.cos(angle), math.sin(angle), 0)
             color.addData4f(1.0, 0.84, 0, 1)
-            
-            vertex.addData3f(radius * math.cos(next_angle), radius * math.sin(next_angle), thickness/2)
+
+            vertex.addData3f(
+                radius * math.cos(next_angle),
+                radius * math.sin(next_angle),
+                thickness / 2,
+            )
             normal.addData3f(math.cos(next_angle), math.sin(next_angle), 0)
             color.addData4f(1.0, 0.84, 0, 1)
-            
-            vertex.addData3f(radius * math.cos(angle), radius * math.sin(angle), -thickness/2)
+
+            vertex.addData3f(
+                radius * math.cos(angle), radius * math.sin(angle), -thickness / 2
+            )
             normal.addData3f(math.cos(angle), math.sin(angle), 0)
             color.addData4f(1.0, 0.84, 0, 1)
-            
-            vertex.addData3f(radius * math.cos(next_angle), radius * math.sin(next_angle), thickness/2)
+
+            vertex.addData3f(
+                radius * math.cos(next_angle),
+                radius * math.sin(next_angle),
+                thickness / 2,
+            )
             normal.addData3f(math.cos(next_angle), math.sin(next_angle), 0)
             color.addData4f(1.0, 0.84, 0, 1)
-            
-            vertex.addData3f(radius * math.cos(next_angle), radius * math.sin(next_angle), -thickness/2)
+
+            vertex.addData3f(
+                radius * math.cos(next_angle),
+                radius * math.sin(next_angle),
+                -thickness / 2,
+            )
             normal.addData3f(math.cos(next_angle), math.sin(next_angle), 0)
             color.addData4f(1.0, 0.84, 0, 1)
-            
-            vertex.addData3f(radius * math.cos(angle), radius * math.sin(angle), -thickness/2)
+
+            vertex.addData3f(
+                radius * math.cos(angle), radius * math.sin(angle), -thickness / 2
+            )
             normal.addData3f(math.cos(angle), math.sin(angle), 0)
             color.addData4f(1.0, 0.84, 0, 1)
-        
+
         # Create triangles
         prim = GeomTriangles(Geom.UHStatic)
         for i in range(segments * 4):  # 4 triangles per segment
-            prim.addVertices(i*3, i*3+1, i*3+2)
-        
+            prim.addVertices(i * 3, i * 3 + 1, i * 3 + 2)
+
         # Create the geometry
         geom = Geom(vdata)
         geom.addPrimitive(prim)
-        
+
         # Create a node to hold the geometry
-        node = GeomNode('coin')
+        node = GeomNode("coin")
         node.addGeom(geom)
-        
+
         return NodePath(node)
 
     def spawnCoinOnTerrain(self):
