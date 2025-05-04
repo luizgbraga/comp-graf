@@ -8,6 +8,7 @@ from panda3d.core import (
     DirectionalLight,
     NodePath,
     WindowProperties,
+    TextureStage,
 )
 
 from core.input import InputController
@@ -61,39 +62,56 @@ class MonkeyDartGame(ShowBase):
         # Create a simple ground plane
         cm = CardMaker("ground")
         cm.setFrame(-40, 40, -40, 40)
+        cm.setUvRange((0, 0), (8, 8))  # Add UV mapping for texture tiling
         ground = self.render.attachNewNode(cm.generate())
         ground.setP(-90)  # Rotate it to be flat
         ground.setZ(-0.5)
-        ground.setColor(0.3, 0.7, 0.3, 1)  # Green color for the ground
+        
+        # Load and apply ground texture
+        ground_texture = self.loader.loadTexture("assets/models/ground.png")
+        ground.setTexture(ground_texture)
+        ground.setTexScale(TextureStage.getDefault(), 8, 8)  # Tile the texture 8x8 times
+        
+        # Load the tree model
+        self.tree_model = self.loader.loadModel("assets/models/tree.bam")
+        # Load the leaf texture
+        leaf_texture = self.loader.loadTexture("assets/models/leaf.png")
+        self.tree_model.setTexture(leaf_texture)
 
-        # Create rocks and trees using procedural geometry
+        # Load the sunflower model
+        self.sunflower_model = self.loader.loadModel("assets/models/sunflower.bam")
+        
+        # Load the rock model
+        self.rock_model = self.loader.loadModel("assets/models/rock.bam")
+        # Load and apply rock texture
+        rock_texture = self.loader.loadTexture("assets/models/rock.png")
+        self.rock_model.setTexture(rock_texture)
+
+        # Create trees, sunflowers, and rocks
         for _ in range(25):
             # Trees
-            tree_trunk = self.createBox(
-                0.5, 0.5, 2.0, (0.6, 0.4, 0.2, 1)
-            )  # Brown trunk
+            tree = self.tree_model.copyTo(self.render)
             tx = random.uniform(-35, 35)
             ty = random.uniform(-35, 35)
-            tree_trunk.setPos(tx, ty, 0)
-            tree_trunk.reparentTo(self.render)
+            tree.setPos(tx, ty, -0.2)  # Moved down slightly
+            # Random rotation for variety
+            tree.setH(random.uniform(0, 360))
 
-            # Tree top (sphere)
-            tree_top = self.createBox(1.5, 1.5, 2.0, (0.1, 0.6, 0.1, 1))  # Green top
-            tree_top.setPos(tx, ty, 2.0)
-            tree_top.reparentTo(self.render)
+            # Sunflowers
+            sunflower = self.sunflower_model.copyTo(self.render)
+            sx = random.uniform(-35, 35)
+            sy = random.uniform(-35, 35)
+            sunflower.setPos(sx, sy, -0.4)
+            sunflower.setH(random.uniform(0, 360))
+            sunflower.setScale(random.uniform(0.4, 0.6))  # Made flowers shorter
 
             # Rocks
-            rock = self.createBox(
-                random.uniform(0.5, 1.0),
-                random.uniform(0.5, 1.0),
-                random.uniform(0.3, 0.5),
-                (0.5, 0.5, 0.5, 1),  # Gray
-            )
+            rock = self.rock_model.copyTo(self.render)
             rx = random.uniform(-35, 35)
             ry = random.uniform(-35, 35)
-            rock.setPos(rx, ry, 0)
+            rock.setPos(rx, ry, -0.4)
             rock.setH(random.uniform(0, 360))
-            rock.reparentTo(self.render)
+            rock.setScale(random.uniform(0.8, 1.2))  # Random size variation
 
         # Set up lighting
         ambientLight = AmbientLight("ambient light")
