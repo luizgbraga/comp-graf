@@ -2,7 +2,6 @@ import math
 import random
 
 from direct.gui.DirectGui import DirectFrame
-from panda3d.core import NodePath
 
 
 class BalloonManager:
@@ -29,9 +28,15 @@ class BalloonManager:
         # Create balloon model instance
         balloon_model = self.balloon_model.copyTo(self.game.render)
 
+        # Scale down the balloon
+        balloon_model.setScale(0.3)  # Make the balloon 30% of its original size
+
         # Choose random color
         color = random.choice(self.balloon_colors)
-        balloon_model.setColor(*color)
+        balloon_model.setColor(color[0], color[1], color[2], color[3])
+        # Ensure color is applied to all nodes in the model
+        for child in balloon_model.findAllMatches("**"):
+            child.setColor(color[0], color[1], color[2], color[3])
 
         # Set the balloon position randomly around the player
         angle = random.uniform(0, 2 * math.pi)
@@ -71,7 +76,9 @@ class BalloonManager:
         # Spawn new balloons
         if self.balloon_spawn_timer > 1.0:  # Every 1 second
             self.balloon_spawn_timer = 0
-            if len(self.balloons) < 10 + self.game.score // 10:  # More balloons as score increases
+            if (
+                len(self.balloons) < 10 + self.game.score // 10
+            ):  # More balloons as score increases
                 self.spawnBalloon()
 
         # Update balloon positions
@@ -83,13 +90,16 @@ class BalloonManager:
             direction.normalize()
 
             # Speed increases with score
-            balloon_speed = 2 + (self.game.score / 100)  # Starts at 2, gradually increases
+            balloon_speed = 2 + (
+                self.game.score / 100
+            )  # Starts at 2, gradually increases
             balloon["model"].setPos(balloon_pos + direction * dt * balloon_speed)
 
             # Bob up and down
             current_z = balloon["model"].getZ()
             balloon["model"].setZ(
-                current_z + math.sin(self.game.taskMgr.globalClock.getFrameTime() * 2) * 0.02
+                current_z
+                + math.sin(self.game.taskMgr.globalClock.getFrameTime() * 2) * 0.02
             )
 
             # Update minimap balloon markers
@@ -117,4 +127,4 @@ class BalloonManager:
         balloon["model"].removeNode()
         balloon["minimap_marker"].destroy()
         if balloon in self.balloons:
-            self.balloons.remove(balloon) 
+            self.balloons.remove(balloon)

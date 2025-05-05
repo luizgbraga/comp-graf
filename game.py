@@ -7,8 +7,8 @@ from panda3d.core import (
     CardMaker,
     DirectionalLight,
     NodePath,
-    WindowProperties,
     TextureStage,
+    WindowProperties,
 )
 
 from core.input import InputController
@@ -66,12 +66,14 @@ class MonkeyDartGame(ShowBase):
         ground = self.render.attachNewNode(cm.generate())
         ground.setP(-90)  # Rotate it to be flat
         ground.setZ(-0.5)
-        
+
         # Load and apply ground texture
         ground_texture = self.loader.loadTexture("assets/models/ground.png")
         ground.setTexture(ground_texture)
-        ground.setTexScale(TextureStage.getDefault(), 8, 8)  # Tile the texture 8x8 times
-        
+        ground.setTexScale(
+            TextureStage.getDefault(), 8, 8
+        )  # Tile the texture 8x8 times
+
         # Load the tree model
         self.tree_model = self.loader.loadModel("assets/models/tree.bam")
         # Load the leaf texture
@@ -80,7 +82,7 @@ class MonkeyDartGame(ShowBase):
 
         # Load the sunflower model
         self.sunflower_model = self.loader.loadModel("assets/models/sunflower.bam")
-        
+
         # Load the rock model
         self.rock_model = self.loader.loadModel("assets/models/rock.bam")
         # Load and apply rock texture

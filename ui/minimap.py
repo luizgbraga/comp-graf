@@ -23,11 +23,17 @@ class Minimap:
 
         # Player indicator on minimap
         self.player_marker = DirectFrame(
-            frameColor=(1, 1, 0, 1),  # Yellow dot
+            frameColor=(0, 0, 0, 0),  # Transparent
             frameSize=(-0.01, 0.01, -0.01, 0.01),
             pos=(0.15, 0, -0.15),  # Center of the minimap
             parent=self.frame,
         )
+
+        # Create the player square
+        cm = CardMaker("player_square")
+        cm.setFrame(-0.005, 0.005, -0.005, 0.005)  # Square shape
+        self.player_square = self.player_marker.attachNewNode(cm.generate())
+        self.player_square.setColor(1, 1, 0, 1)  # Yellow
 
         # Hide minimap initially
         self.hide()
