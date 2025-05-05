@@ -105,7 +105,7 @@ class MonkeyDartGame(ShowBase):
             sy = random.uniform(-35, 35)
             sunflower.setPos(sx, sy, -0.4)
             sunflower.setH(random.uniform(0, 360))
-            sunflower.setScale(random.uniform(0.4, 0.6))  # Made flowers shorter
+            sunflower.setScale(random.uniform(0.2, 0.3))  # Made flowers smaller
 
             # Rocks
             rock = self.rock_model.copyTo(self.render)
