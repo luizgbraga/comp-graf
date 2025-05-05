@@ -217,7 +217,7 @@ class MonkeyDartGame(ShowBase):
 
         # Reset game variables
         self.score = 0
-        self.coins = 0
+        # self.coins = 0  # Removed to maintain coins across plays
         self.weaponType = "dart"
         self.current_weapon_index = 0
 
