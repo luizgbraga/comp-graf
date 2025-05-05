@@ -20,8 +20,22 @@ class ProjectileManager:
 
         # Weapon properties
         self.weaponProperties = {
-            "dart": {"damage": 1, "speed": 30, "cooldown": 0.5},
-            "katana": {"damage": 3, "speed": 45, "cooldown": 0.3},
+            "dart": {
+                "damage": 1,
+                "speed": 30,
+                "cooldown": 0.3,  # Faster shooting
+                "size": (0.1, 0.5, 0.1),
+                "color": (0.8, 0.8, 0, 1),  # Yellow
+                "description": "Fast but weak",
+            },
+            "katana": {
+                "damage": 2,
+                "speed": 45,
+                "cooldown": 0.6,  # Slower shooting
+                "size": (0.2, 1.0, 0.2),
+                "color": (0.7, 0.7, 0.7, 1),  # Silver
+                "description": "Powerful but slow",
+            },
         }
 
     def shootProjectile(self):
@@ -29,20 +43,18 @@ class ProjectileManager:
         if not self.canShoot or self.game.gameState != "playing":
             return
 
-        # Get weapon type
+        # Get weapon type and properties
         weaponType = self.game.weaponType
+        weaponProps = self.weaponProperties[weaponType]
 
-        # Create a dart/katana model
-        if weaponType == "dart":
-            dart_model = self.game.createBox(
-                0.1, 0.5, 0.1, (0.8, 0.8, 0, 1)
-            )  # Yellow dart
-        else:  # Katana
-            dart_model = self.game.createBox(
-                0.2, 1.0, 0.2, (0.7, 0.7, 0.7, 1)
-            )  # Silver katana
-
-        dart_model.reparentTo(self.game.render)
+        # Create projectile model
+        projectile_model = self.game.createBox(
+            weaponProps["size"][0],
+            weaponProps["size"][1],
+            weaponProps["size"][2],
+            weaponProps["color"],
+        )
+        projectile_model.reparentTo(self.game.render)
 
         # Set position based on camera mode
         if self.game.player.camera_mode == "first-person":
@@ -86,19 +98,24 @@ class ProjectileManager:
                 # Default to forward if mouse not available
                 direction = self.game.camera.getQuat(self.game.render).getForward()
 
-        # Set the dart position and orientation
-        dart_model.setPos(start_pos)
+        # Set the projectile position and orientation
+        projectile_model.setPos(start_pos)
 
-        # Make the dart look in the direction it's traveling
+        # Make the projectile look in the direction it's traveling
         look_at = start_pos + direction * 10
-        dart_model.lookAt(look_at)
+        projectile_model.lookAt(look_at)
 
         # Create a visual effect for shooting
         self.createShootEffect(start_pos, direction)
 
-        # Add dart to the list
+        # Add projectile to the list with its properties
         self.projectiles.append(
-            {"model": dart_model, "direction": direction, "type": weaponType}
+            {
+                "model": projectile_model,
+                "direction": direction,
+                "type": weaponType,
+                "damage": weaponProps["damage"],
+            }
         )
 
         # Set cooldown
@@ -199,29 +216,13 @@ class ProjectileManager:
                 balloon_pos = balloon["model"].getPos()
 
                 if (projectile_pos - balloon_pos).length() < 1.5:
-                    # Create a particle effect for balloon pop
-                    self.createBalloonPopEffect(balloon_pos, balloon["color"])
-
-                    # Sometimes spawn a coin where the balloon popped
-                    if random.random() < 0.3:  # 30% chance
-                        self.game.coinManager.spawnFlyingCoin(balloon_pos)
-
-                    # Remove the balloon
-                    self.game.balloonManager.removeBalloon(balloon)
+                    # Apply damage to the balloon
+                    self.game.balloonManager.takeDamage(balloon, projectile["damage"])
 
                     # Remove the projectile
                     projectile["model"].removeNode()
                     if projectile in self.projectiles:
                         self.projectiles.remove(projectile)
-
-                    # Increase score and coins
-                    self.game.score += 1
-                    self.game.coins += 1
-
-                    # Update HUD
-                    self.game.hud.updateScore(self.game.score)
-                    self.game.hud.updateCoins(self.game.coins)
-
                     break
 
             # Remove if too far away or already hit something

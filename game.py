@@ -35,16 +35,18 @@ class MonkeyDartGame(ShowBase):
         self.score = 0
         self.coins = 0
         self.weaponType = "dart"
+        self.owned_weapons = ["dart"]  # Start with dart gun
+        self.current_weapon_index = 0
 
         # Create all components in a specific order to avoid dependency issues
         self.setupScene()
-        self.menuManager = MenuManager(self)
-        self.hud = HUD(self)
-        self.minimap = Minimap(self)
         self.player = Player(self)
         self.balloonManager = BalloonManager(self)
         self.projectileManager = ProjectileManager(self)
         self.coinManager = CoinManager(self)
+        self.menuManager = MenuManager(self)
+        self.hud = HUD(self)
+        self.minimap = Minimap(self)
         self.inputController = InputController(self, self.player)
 
         # Initialize player's camera after HUD is created
@@ -61,8 +63,10 @@ class MonkeyDartGame(ShowBase):
     def setupScene(self):
         # Create a simple ground plane
         cm = CardMaker("ground")
-        cm.setFrame(-40, 40, -40, 40)
-        cm.setUvRange((0, 0), (8, 8))  # Add UV mapping for texture tiling
+        cm.setFrame(-80, 80, -80, 80)  # Doubled the size from -40,40 to -80,80
+        cm.setUvRange(
+            (0, 0), (16, 16)
+        )  # Doubled the UV mapping to maintain texture density
         ground = self.render.attachNewNode(cm.generate())
         ground.setP(-90)  # Rotate it to be flat
         ground.setZ(-0.5)
@@ -71,8 +75,8 @@ class MonkeyDartGame(ShowBase):
         ground_texture = self.loader.loadTexture("assets/models/ground.png")
         ground.setTexture(ground_texture)
         ground.setTexScale(
-            TextureStage.getDefault(), 8, 8
-        )  # Tile the texture 8x8 times
+            TextureStage.getDefault(), 16, 16
+        )  # Doubled the texture tiling to match new size
 
         # Load the tree model
         self.tree_model = self.loader.loadModel("assets/models/tree.bam")
@@ -90,27 +94,27 @@ class MonkeyDartGame(ShowBase):
         self.rock_model.setTexture(rock_texture)
 
         # Create trees, sunflowers, and rocks
-        for _ in range(25):
+        for _ in range(50):  # Doubled the number of objects to maintain density
             # Trees
             tree = self.tree_model.copyTo(self.render)
-            tx = random.uniform(-35, 35)
-            ty = random.uniform(-35, 35)
+            tx = random.uniform(-75, 75)  # Adjusted range to match new ground size
+            ty = random.uniform(-75, 75)
             tree.setPos(tx, ty, -0.2)  # Moved down slightly
             # Random rotation for variety
             tree.setH(random.uniform(0, 360))
 
             # Sunflowers
             sunflower = self.sunflower_model.copyTo(self.render)
-            sx = random.uniform(-35, 35)
-            sy = random.uniform(-35, 35)
+            sx = random.uniform(-75, 75)  # Adjusted range to match new ground size
+            sy = random.uniform(-75, 75)
             sunflower.setPos(sx, sy, -0.4)
             sunflower.setH(random.uniform(0, 360))
             sunflower.setScale(random.uniform(0.2, 0.3))  # Made flowers smaller
 
             # Rocks
             rock = self.rock_model.copyTo(self.render)
-            rx = random.uniform(-35, 35)
-            ry = random.uniform(-35, 35)
+            rx = random.uniform(-75, 75)  # Adjusted range to match new ground size
+            ry = random.uniform(-75, 75)
             rock.setPos(rx, ry, -0.4)
             rock.setH(random.uniform(0, 360))
             rock.setScale(random.uniform(0.8, 1.2))  # Random size variation
@@ -215,6 +219,7 @@ class MonkeyDartGame(ShowBase):
         self.score = 0
         self.coins = 0
         self.weaponType = "dart"
+        self.current_weapon_index = 0
 
         # Reset managers
         self.player.reset()
@@ -266,3 +271,13 @@ class MonkeyDartGame(ShowBase):
             self.projectileManager.createUpgradeEffect(
                 self.player.weapon_holder.getPos(self.render)
             )
+
+    def switchWeapon(self):
+        """Switch to the next owned weapon"""
+        if len(self.owned_weapons) > 1:
+            self.current_weapon_index = (self.current_weapon_index + 1) % len(
+                self.owned_weapons
+            )
+            self.weaponType = self.owned_weapons[self.current_weapon_index]
+            self.player.switchWeapon(self.weaponType)
+            self.hud.updateWeapon(self.weaponType)
