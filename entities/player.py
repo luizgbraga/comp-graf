@@ -7,6 +7,20 @@ class Player:
     def __init__(self, game):
         self.game = game
 
+        self.gravity = 22        # gravity acceleration
+        self.jump_speed = 7      # initial jump velocity
+        self.max_jump_hold = 0.4    # max duration to hold jump for variable height
+        self.gravity_scale = 0.3
+        self.jump_buffer_time = 0.1   # buffer jump input before landing
+
+        # Vertical state
+        self.z_velocity = 0.0
+        self.jump_timer = self.max_jump_hold
+        self.buffer_timer = 0.0       # how long since jump was pressed on air
+        self.max_jump_buffer_time = 0.2  # max time to buffer jump input
+        self.is_jumping = False
+
+
         # Create a model for the player (monkey) using simple shapes
         self._createModel()
 
@@ -134,21 +148,23 @@ class Player:
             math.cos(-heading_rad + math.pi / 2),
             0,
         )
-
+        on_ground = self.root.getZ() <= 0.001
         # Move based on keys
         if keys["forward"]:
             self.root.setPos(self.root.getPos() + forward_vec * dt * speed)
             # Add bobbing animation to simulate walking
-            self.root.setZ(
-                math.sin(self.game.taskMgr.globalClock.getFrameTime() * 10) * 0.05 + 0
-            )
+            if on_ground:
+                self.root.setZ(
+                    math.sin(self.game.taskMgr.globalClock.getFrameTime() * 10) * 0.05
+                )
 
         if keys["backward"]:
             self.root.setPos(self.root.getPos() - forward_vec * dt * speed)
             # Add bobbing animation for walking backward
-            self.root.setZ(
-                math.sin(self.game.taskMgr.globalClock.getFrameTime() * 10) * 0.05 + 0
-            )
+            if on_ground:
+                self.root.setZ(
+                    math.sin(self.game.taskMgr.globalClock.getFrameTime() * 10) * 0.05
+                )
 
         if keys["left"]:
             self.root.setPos(self.root.getPos() - right_vec * dt * speed)
@@ -156,13 +172,50 @@ class Player:
         if keys["right"]:
             self.root.setPos(self.root.getPos() + right_vec * dt * speed)
 
+        
+        jumping = keys.get("jump", False)
+        # Jump input buffering
+        if jumping:
+            self.buffer_timer += dt
+        else:
+            self.buffer_timer = 0.0
+
+        # Attempt jump if buffered and allowed
+        if on_ground and not self.is_jumping and self.buffer_timer > 0 and self.buffer_timer < self.max_jump_buffer_time:
+            self.is_jumping = True
+            self.z_velocity = self.jump_speed
+            self.jump_timer = 0.0
+            self.buffer_timer = 0.0
+
+        # Variable jump height
+        if self.is_jumping and jumping and self.jump_timer < self.max_jump_hold:
+            self.jump_timer += dt
+            gravity_scale = self.gravity_scale
+        else:
+            gravity_scale = 1.0
+        if self.is_jumping and not jumping:
+            self.jump_timer = 0.0
+            self.is_jumping = False
+            self.buffer_timer = 0.0
+            
+        # Apply gravity
+        self.z_velocity -= self.gravity * gravity_scale * dt
+
+        # Update vertical position
+        new_z = self.root.getZ() + self.z_velocity * dt
+        # Check landing
+        if new_z <= 0.0:
+            new_z = 0.0
+            self.z_velocity = 0.0
+            self.is_jumping = False
+
         # Constrain player movement to the play area
         playerPos = self.root.getPos()
         playerPos.x = max(-75, min(75, playerPos.x))
         playerPos.y = max(-75, min(75, playerPos.y))
 
         # Make sure player is at correct z height
-        playerPos.z = 0  # Base height
+        playerPos.z = new_z
         self.root.setPos(playerPos)
 
     def switchCamera(self):

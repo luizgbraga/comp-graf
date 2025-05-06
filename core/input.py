@@ -52,6 +52,8 @@ class InputController:
         self.game.accept("c-up", self.updateKeyMap, ["switchCamera", False])
         self.game.accept("tab", self.updateKeyMap, ["weaponMenu", True])
         self.game.accept("tab-up", self.updateKeyMap, ["weaponMenu", False])
+        self.game.accept("space", self.updateKeyMap, ["jump", True])
+        self.game.accept("space-up", self.updateKeyMap, ["jump", False])
 
     def setupCrosshair(self):
         """Create a crosshair for aiming"""
@@ -82,7 +84,6 @@ class InputController:
     def updateKeyMap(self, key, value):
         """Update key state in the key map"""
         self.keyMap[key] = value
-
         # Handle one-shot actions
         if key == "shoot" and value and self.game.gameState == "playing":
             self.game.projectileManager.shootProjectile()
