@@ -5,18 +5,16 @@ from direct.gui.DirectGui import (
     DirectButton,
     DirectDialog,
     DirectLabel,
-    DirectFrame,
 )
 from panda3d.core import TextNode
 
 # Color constants for consistent theming
-MENU_BG_COLOR = (0.08, 0.08, 0.12, 0.95)  # Darker, more professional background
-BUTTON_COLOR = (0.15, 0.15, 0.2, 0.9)  # Slightly lighter than background
-BUTTON_HOVER_COLOR = (0.25, 0.25, 0.35, 0.9)  # More vibrant hover state
-TEXT_COLOR = (0.9, 0.9, 0.95, 1)  # Slightly off-white for better readability
-TITLE_COLOR = (1, 0.8, 0.2, 1)  # Gold color for titles
-COIN_COLOR = (1, 0.8, 0, 1)  # Gold color for coins
-ACCENT_COLOR = (0.2, 0.6, 1, 1)  # Blue accent color for highlights
+MENU_BG_COLOR = (0.1, 0.1, 0.1, 0.9)
+BUTTON_COLOR = (0.2, 0.2, 0.2, 0.8)
+BUTTON_HOVER_COLOR = (0.3, 0.3, 0.3, 0.8)
+TEXT_COLOR = (1, 1, 1, 1)
+TITLE_COLOR = (1, 1, 1, 1)
+COIN_COLOR = (1, 0.8, 0, 1)
 
 
 class MenuManager:
@@ -46,15 +44,6 @@ class MenuManager:
             pressEffect=1,
             rolloverSound=None,
             clickSound=None,
-            frameSize=(-0.5, 0.5, -0.15, 0.15),  # Wider buttons
-            text_align=TextNode.ACenter,
-            text_pos=(0, -0.02),  # Slight vertical adjustment
-            text_scale=0.8,  # Slightly smaller text
-            extraArgs=[],
-            frameTexture=None,
-            text_font=None,
-            text_shadow=(0, 0, 0, 0.5),  # Add text shadow
-            text_shadowOffset=(0.002, -0.002),  # Subtle shadow offset
         )
 
     def createLabel(self, text, pos, parent=None, scale=0.07, align=TextNode.ACenter):
@@ -67,86 +56,71 @@ class MenuManager:
             relief=None,
             text_fg=TEXT_COLOR,
             text_align=align,
-            text_shadow=(0, 0, 0, 0.5),  # Add text shadow
-            text_shadowOffset=(0.002, -0.002),  # Subtle shadow offset
         )
 
     def setupMainMenu(self):
         """Create the main menu UI"""
         self.main_menu = DirectDialog(
-            frameSize=(-0.8, 0.8, -0.8, 0.8),  # Slightly larger menu
-            fadeScreen=0.5,  # Darker fade
+            frameSize=(-0.7, 0.7, -0.7, 0.7),
+            fadeScreen=0.4,
             relief=DGG.FLAT,
             frameColor=MENU_BG_COLOR,
-        )
-
-        # Add a decorative border
-        border = DirectFrame(
-            frameColor=ACCENT_COLOR,
-            frameSize=(-0.82, 0.82, -0.82, 0.82),
-            parent=self.main_menu,
         )
 
         self.createLabel(
             "Monkey Dart Game",
             (0, 0, 0.5),
             parent=self.main_menu,
-            scale=0.15,  # Larger title
-        )["text_fg"] = TITLE_COLOR  # Gold color for title
+            scale=0.12,
+        )
 
         # Main menu buttons
-        button_spacing = 0.18  # Increased spacing
+        button_spacing = 0.15
         start_y = 0.2
         self.createButton(
             "Start Game",
             (0, 0, start_y),
             command=self.game.startGame,
             parent=self.main_menu,
-            scale=0.09,  # Larger buttons
+            scale=0.08,
         )
         self.createButton(
             "Store",
             (0, 0, start_y - button_spacing),
             command=self.showStore,
             parent=self.main_menu,
-            scale=0.09,
+            scale=0.08,
         )
         self.createButton(
             "Rules",
             (0, 0, start_y - button_spacing * 2),
             command=self.showRules,
             parent=self.main_menu,
-            scale=0.09,
+            scale=0.08,
         )
         self.createButton(
             "Quit",
             (0, 0, start_y - button_spacing * 3),
             command=sys.exit,
             parent=self.main_menu,
-            scale=0.09,
+            scale=0.08,
         )
 
-        # Controls section with better formatting
+        # Controls section
         controls_text = (
-            "Controls:\n\n"
+            "Controls:\n"
             "• W, A, S, D - Move\n"
             "• Mouse - Look/Aim\n"
             "• Left Mouse Button - Shoot\n"
             "• C - Switch Camera\n"
             "• TAB - Switch Weapons"
         )
-        controls_label = self.createLabel(
+        self.createLabel(
             controls_text,
             (0, 0, -0.3),
             parent=self.main_menu,
-            scale=0.06,
+            scale=0.05,
         )
-        controls_label["text_fg"] = (
-            0.8,
-            0.8,
-            0.9,
-            1,
-        )  # Slightly dimmed text for controls
 
     def setupWeaponMenu(self):
         """Create the weapon selection menu UI"""
@@ -227,63 +201,66 @@ class MenuManager:
     def showGameOver(self, score):
         """Create and show game over screen"""
         self.game_over_menu = DirectDialog(
-            frameSize=(-0.8, 0.8, -0.8, 0.8),
-            fadeScreen=0.6,  # Darker fade for game over
+            frameSize=(-0.7, 0.7, -0.7, 0.7),
+            fadeScreen=0.4,
             relief=DGG.FLAT,
-            frameColor=(0.08, 0.08, 0.12, 0.95),
-        )
-
-        # Add a decorative border
-        border = DirectFrame(
-            frameColor=ACCENT_COLOR,
-            frameSize=(-0.82, 0.82, -0.82, 0.82),
-            parent=self.game_over_menu,
+            frameColor=(0.1, 0.1, 0.1, 0.7),
         )
 
         self.gameOverText = DirectLabel(
             text="Game Over",
-            scale=0.15,
+            scale=0.1,
             pos=(0, 0, 0.5),
             parent=self.game_over_menu,
             relief=None,
-            text_fg=TITLE_COLOR,
-            text_shadow=(0, 0, 0, 0.5),
-            text_shadowOffset=(0.002, -0.002),
+            text_fg=(1, 1, 1, 1),
+            text_shadow=(0, 0, 0, 1),
         )
 
         self.scoreText = DirectLabel(
             text=f"Score: {score}",
-            scale=0.1,
+            scale=0.07,
             pos=(0, 0, 0.3),
             parent=self.game_over_menu,
             relief=None,
-            text_fg=TEXT_COLOR,
-            text_shadow=(0, 0, 0, 0.5),
-            text_shadowOffset=(0.002, -0.002),
+            text_fg=(1, 1, 1, 1),
+            text_shadow=(0, 0, 0, 1),
         )
 
-        self.restartButton = self.createButton(
-            "Play Again",
-            (0, 0, 0.1),
+        self.restartButton = DirectButton(
+            text="Play Again",
+            scale=0.1,
+            pos=(0, 0, 0.1),
+            parent=self.game_over_menu,
             command=self.game.restartGame,
-            parent=self.game_over_menu,
-            scale=0.09,
+            relief=DGG.FLAT,
+            frameColor=(0.2, 0.2, 0.2, 0.8),
+            text_fg=(1, 1, 1, 1),
+            pressEffect=1,
         )
 
-        self.menuButton = self.createButton(
-            "Main Menu",
-            (0, 0, -0.1),
+        self.menuButton = DirectButton(
+            text="Main Menu",
+            scale=0.1,
+            pos=(0, 0, -0.1),
+            parent=self.game_over_menu,
             command=self.game.returnToMenu,
-            parent=self.game_over_menu,
-            scale=0.09,
+            relief=DGG.FLAT,
+            frameColor=(0.2, 0.2, 0.2, 0.8),
+            text_fg=(1, 1, 1, 1),
+            pressEffect=1,
         )
 
-        self.quitButton = self.createButton(
-            "Quit",
-            (0, 0, -0.3),
-            command=sys.exit,
+        self.quitButton = DirectButton(
+            text="Quit",
+            scale=0.1,
+            pos=(0, 0, -0.3),
             parent=self.game_over_menu,
-            scale=0.09,
+            command=sys.exit,
+            relief=DGG.FLAT,
+            frameColor=(0.2, 0.2, 0.2, 0.8),
+            text_fg=(1, 1, 1, 1),
+            pressEffect=1,
         )
 
     def showStore(self):
@@ -332,17 +309,10 @@ class MenuManager:
     def setupStoreMenu(self):
         """Create the store menu UI"""
         self.store_menu = DirectDialog(
-            frameSize=(-0.8, 0.8, -0.8, 0.8),
-            fadeScreen=0.5,
+            frameSize=(-0.7, 0.7, -0.7, 0.7),
+            fadeScreen=0.4,
             relief=DGG.FLAT,
             frameColor=MENU_BG_COLOR,
-        )
-
-        # Add a decorative border
-        border = DirectFrame(
-            frameColor=ACCENT_COLOR,
-            frameSize=(-0.82, 0.82, -0.82, 0.82),
-            parent=self.store_menu,
         )
 
         # Title and coins
@@ -350,71 +320,56 @@ class MenuManager:
             "Store",
             (0, 0, 0.5),
             parent=self.store_menu,
-            scale=0.15,
-        )["text_fg"] = TITLE_COLOR
-
+            scale=0.12,
+        )
         self.store_coin_label = self.createLabel(
             f"Coins: {self.game.coins}",
             (0, 0, 0.35),
             parent=self.store_menu,
-            scale=0.09,
+            scale=0.08,
         )
         self.store_coin_label["text_fg"] = COIN_COLOR
 
-        # Weapon display section with better layout
-        weapon_spacing = 0.45  # Increased spacing
+        # Weapon display section
+        weapon_spacing = 0.4
         dart_props = self.game.projectileManager.weaponProperties["dart"]
         katana_props = self.game.projectileManager.weaponProperties["katana"]
 
-        # Dart Gun Info with better formatting
+        # Dart Gun Info
         self.createLabel(
             "Dart Gun",
             (-weapon_spacing, 0, 0.2),
             parent=self.store_menu,
-            scale=0.09,
-        )["text_fg"] = ACCENT_COLOR
-
-        dart_info = (
-            f"Damage: {dart_props['damage']}\n"
-            f"Speed: {dart_props['speed']}\n"
-            f"Cooldown: {dart_props['cooldown']}s\n\n"
-            f"{dart_props['description']}"
+            scale=0.08,
         )
         self.createLabel(
-            dart_info,
+            f"Damage: {dart_props['damage']}\nSpeed: {dart_props['speed']}\nCooldown: {dart_props['cooldown']}s\n{dart_props['description']}",
             (-weapon_spacing, 0, 0),
             parent=self.store_menu,
-            scale=0.06,
+            scale=0.05,
         )
 
-        # Katana Info with better formatting
+        # Katana Info
         self.createLabel(
             "Katana",
             (weapon_spacing, 0, 0.2),
             parent=self.store_menu,
-            scale=0.09,
-        )["text_fg"] = ACCENT_COLOR
-
-        katana_info = (
-            f"Damage: {katana_props['damage']}\n"
-            f"Speed: {katana_props['speed']}\n"
-            f"Cooldown: {katana_props['cooldown']}s\n\n"
-            f"{katana_props['description']}"
+            scale=0.08,
         )
         self.createLabel(
-            katana_info,
+            f"Damage: {katana_props['damage']}\nSpeed: {katana_props['speed']}\nCooldown: {katana_props['cooldown']}s\n{katana_props['description']}",
             (weapon_spacing, 0, 0),
             parent=self.store_menu,
-            scale=0.06,
+            scale=0.05,
         )
 
-        # Buy button with better styling
+        # Buy button
         self.buy_katana_button = self.createButton(
             "Buy Katana (50 coins)",
             (0, 0, -0.2),
             command=self.game.upgradeWeapon,
             parent=self.store_menu,
-            scale=0.08,
+            scale=0.07,
         )
 
         # Back button
@@ -423,7 +378,7 @@ class MenuManager:
             (0, 0, -0.4),
             command=self.hideStore,
             parent=self.store_menu,
-            scale=0.08,
+            scale=0.07,
         )
 
         # Hide initially
@@ -432,25 +387,18 @@ class MenuManager:
     def setupRulesMenu(self):
         """Create the rules and mechanics menu UI"""
         self.rules_menu = DirectDialog(
-            frameSize=(-0.8, 0.8, -0.8, 0.8),
-            fadeScreen=0.5,
+            frameSize=(-0.7, 0.7, -0.7, 0.7),
+            fadeScreen=0.4,
             relief=DGG.FLAT,
             frameColor=MENU_BG_COLOR,
-        )
-
-        # Add a decorative border
-        border = DirectFrame(
-            frameColor=ACCENT_COLOR,
-            frameSize=(-0.82, 0.82, -0.82, 0.82),
-            parent=self.rules_menu,
         )
 
         self.createLabel(
             "Game Rules & Mechanics",
             (0, 0, 0.5),
             parent=self.rules_menu,
-            scale=0.15,
-        )["text_fg"] = TITLE_COLOR
+            scale=0.12,
+        )
 
         rules_text = (
             "Game Rules:\n\n"
@@ -465,25 +413,19 @@ class MenuManager:
             "• Use the environment to your advantage"
         )
 
-        rules_label = self.createLabel(
+        self.createLabel(
             rules_text,
             (0, 0, 0.1),
             parent=self.rules_menu,
-            scale=0.06,
+            scale=0.05,
         )
-        rules_label["text_fg"] = (
-            0.9,
-            0.9,
-            0.95,
-            1,
-        )  # Brighter text for better readability
 
         self.createButton(
             "Back",
             (0, 0, -0.4),
             command=self.hideRules,
             parent=self.rules_menu,
-            scale=0.08,
+            scale=0.07,
         )
 
         # Hide initially

@@ -40,7 +40,7 @@ class Minimap:
 
     def updatePlayerMarker(self, player_pos, heading):
         """Update the player marker on the minimap"""
-        map_scale = 0.14 / 35  # 0.14 is half the map size, 35 is half the terrain size
+        map_scale = 0.14 / 75  # 0.14 is half the map size, 75 is half the terrain size
         self.player_marker.setPos(
             0.15 + player_pos.x * map_scale, 0, -0.15 - player_pos.y * map_scale
         )

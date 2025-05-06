@@ -158,8 +158,8 @@ class Player:
 
         # Constrain player movement to the play area
         playerPos = self.root.getPos()
-        playerPos.x = max(-35, min(35, playerPos.x))
-        playerPos.y = max(-35, min(35, playerPos.y))
+        playerPos.x = max(-75, min(75, playerPos.x))
+        playerPos.y = max(-75, min(75, playerPos.y))
 
         # Make sure player is at correct z height
         playerPos.z = 0  # Base height
