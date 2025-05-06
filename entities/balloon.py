@@ -129,7 +129,8 @@ class BalloonManager:
                 "health": chosen_color["health"],
                 "max_health": chosen_color["health"],
                 "points": balloon_props["points"],
-                "speed_multiplier": balloon_props["speed_multiplier"] * chosen_color["speed_multiplier"],
+                "speed_multiplier": balloon_props["speed_multiplier"]
+                * chosen_color["speed_multiplier"],
             }
         )
 

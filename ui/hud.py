@@ -97,5 +97,7 @@ class HUD:
 
     def disableUpgradeButton(self):
         """Disable the upgrade button in the store"""
-        if hasattr(self.game, 'menuManager') and hasattr(self.game.menuManager, 'store'):
+        if hasattr(self.game, "menuManager") and hasattr(
+            self.game.menuManager, "store"
+        ):
             self.game.menuManager.store.disableUpgradeButton()

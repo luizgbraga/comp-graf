@@ -141,7 +141,12 @@ class MenuManager:
             parent=self.main_menu,
             scale=0.06,
         )
-        controls_label["text_fg"] = (0.8, 0.8, 0.9, 1)  # Slightly dimmed text for controls
+        controls_label["text_fg"] = (
+            0.8,
+            0.8,
+            0.9,
+            1,
+        )  # Slightly dimmed text for controls
 
     def setupWeaponMenu(self):
         """Create the weapon selection menu UI"""
@@ -466,7 +471,12 @@ class MenuManager:
             parent=self.rules_menu,
             scale=0.06,
         )
-        rules_label["text_fg"] = (0.9, 0.9, 0.95, 1)  # Brighter text for better readability
+        rules_label["text_fg"] = (
+            0.9,
+            0.9,
+            0.95,
+            1,
+        )  # Brighter text for better readability
 
         self.createButton(
             "Back",
