@@ -13,45 +13,51 @@ class BalloonManager:
         # Load the balloon model
         self.balloon_model = self.game.loader.loadModel("assets/models/balloon.bam")
 
-        # Balloon colors with their properties (health and spawn chance)
+        # Balloon colors with their properties (health, spawn chance, and speed multiplier)
         self.balloon_colors = [
             {
                 "color": (1, 0, 0, 1),
                 "health": 2,
                 "chance": 0.20,
+                "speed_multiplier": 1.0,
             },  # Red - Common, 2 hits
             {
                 "color": (0, 1, 0, 1),
                 "health": 2,
                 "chance": 0.20,
-            },  # Green - Common, 2 hits
+                "speed_multiplier": 1.2,
+            },  # Green - Common, 2 hits, faster
             {
                 "color": (0, 0, 1, 1),
                 "health": 3,
                 "chance": 0.20,
-            },  # Blue - Uncommon, 3 hits
+                "speed_multiplier": 0.9,
+            },  # Blue - Uncommon, 3 hits, slower
             {
                 "color": (1, 1, 0, 1),
                 "health": 3,
                 "chance": 0.20,
-            },  # Yellow - Uncommon, 3 hits
+                "speed_multiplier": 1.1,
+            },  # Yellow - Uncommon, 3 hits, faster
             {
                 "color": (1, 0, 1, 1),
                 "health": 4,
                 "chance": 0.15,
-            },  # Purple - Rare, 4 hits
+                "speed_multiplier": 0.8,
+            },  # Purple - Rare, 4 hits, slower
             {
                 "color": (0, 1, 1, 1),
                 "health": 6,
                 "chance": 0.05,
-            },  # Cyan - Very Rare, 6 hits
+                "speed_multiplier": 0.7,
+            },  # Cyan - Very Rare, 6 hits, slowest
         ]
 
         # Balloon types with their properties
         self.balloon_types = {
-            "small": {"scale": 0.2, "points": 1},
-            "medium": {"scale": 0.3, "points": 2},
-            "large": {"scale": 0.4, "points": 3},
+            "small": {"scale": 0.2, "points": 1, "speed_multiplier": 1.2},
+            "medium": {"scale": 0.3, "points": 2, "speed_multiplier": 1.0},
+            "large": {"scale": 0.4, "points": 3, "speed_multiplier": 0.8},
         }
 
     def spawnBalloon(self):
@@ -87,15 +93,18 @@ class BalloonManager:
 
         # Set the balloon position randomly around the player
         angle = random.uniform(0, 2 * math.pi)
-        distance = random.uniform(30, 40)
+        # Increased spawn distance range for more dynamic gameplay
+        min_distance = 40
+        max_distance = 60
+        distance = random.uniform(min_distance, max_distance)
         player_pos = self.game.player.root.getPos()
         x = player_pos.x + distance * math.cos(angle)
         y = player_pos.y + distance * math.sin(angle)
-        z = 2 + random.uniform(0, 3)  # Random height
+        z = 2 + random.uniform(0, 4)  # Increased height variation
 
         # Constrain the balloon position to the play area
-        x = max(-35, min(35, x))
-        y = max(-35, min(35, y))
+        x = max(-75, min(75, x))  # Increased play area to match ground size
+        y = max(-75, min(75, y))
 
         balloon_model.setPos(x, y, z)
 
@@ -120,6 +129,7 @@ class BalloonManager:
                 "health": chosen_color["health"],
                 "max_health": chosen_color["health"],
                 "points": balloon_props["points"],
+                "speed_multiplier": balloon_props["speed_multiplier"] * chosen_color["speed_multiplier"],
             }
         )
 
@@ -187,10 +197,9 @@ class BalloonManager:
             direction = player_pos - balloon_pos
             direction.normalize()
 
-            # Speed increases with score
-            balloon_speed = 2 + (
-                self.game.score / 100
-            )  # Starts at 2, gradually increases
+            # Speed increases with score and varies by balloon type/color
+            base_speed = 2 + (self.game.score / 100)  # Starts at 2, gradually increases
+            balloon_speed = base_speed * balloon["speed_multiplier"]
             balloon["model"].setPos(balloon_pos + direction * dt * balloon_speed)
 
             # Bob up and down

@@ -258,6 +258,7 @@ class MonkeyDartGame(ShowBase):
         if self.weaponType == "dart" and self.coins >= 50:
             self.coins -= 50
             self.weaponType = "katana"
+            self.owned_weapons.append("katana")  # Add katana to owned weapons
 
             # Update player weapon
             self.player.switchWeapon(self.weaponType)

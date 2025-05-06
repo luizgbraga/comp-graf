@@ -94,3 +94,8 @@ class HUD:
     def hide(self):
         """Hide the HUD"""
         self.frame.hide()
+
+    def disableUpgradeButton(self):
+        """Disable the upgrade button in the store"""
+        if hasattr(self.game, 'menuManager') and hasattr(self.game.menuManager, 'store'):
+            self.game.menuManager.store.disableUpgradeButton()
