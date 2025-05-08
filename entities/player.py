@@ -12,6 +12,7 @@ class Player:
         self.max_jump_hold = 0.4    # max duration to hold jump for variable height
         self.gravity_scale = 0.3
         self.jump_buffer_time = 0.1   # buffer jump input before landing
+        self.playerHeight = 0.5
 
         # Vertical state
         self.z_velocity = 0.0
@@ -132,7 +133,33 @@ class Player:
         # Top-down camera (above player)
         self.topDownCamNode = self.root.attachNewNode("top_down_cam")
         self.topDownCamNode.setPos(0, 0, 15)
+    def checkObstacleCollision(self, playerPos, oldPos):
+        """
+        Check for collision between player position and any obstacles.
+        :param playerPos: LPoint3f or a tuple (x, y, z)
+        :return: True if a collision is detected, otherwise False
+        """
+        px, py, pz = playerPos
+        old_x, old_y, old_z = oldPos
+        groundHeight = 0
+        for node, radius, height in self.game.obstacles:
+            ox, oy, oz = node.getPos()
 
+            # Simple 2D distance check (ignoring height for now)
+            dx = px - ox
+            dy = py - oy
+            dx_old = old_x - ox
+            dy_old = old_y - oy
+            distance_sq = dx * dx + dy * dy
+            old_distance_sq = dx_old * dx_old + dy_old * dy_old
+
+            if distance_sq < radius * radius:
+                if pz + 0.01> height:
+                    if old_distance_sq < radius * radius:
+                        return False, groundHeight + height
+                    return False, groundHeight
+                return True, groundHeight
+        return False, groundHeight
     def update(self, dt, keys):
         """Update player movement and state"""
         # Move the player based on the key presses
@@ -148,31 +175,27 @@ class Player:
             math.cos(-heading_rad + math.pi / 2),
             0,
         )
-        on_ground = self.root.getZ() <= 0.001
+        old_pos = self.root.getPos()
         # Move based on keys
         if keys["forward"]:
             self.root.setPos(self.root.getPos() + forward_vec * dt * speed)
-            # Add bobbing animation to simulate walking
-            if on_ground:
-                self.root.setZ(
-                    math.sin(self.game.taskMgr.globalClock.getFrameTime() * 10) * 0.05
-                )
 
         if keys["backward"]:
             self.root.setPos(self.root.getPos() - forward_vec * dt * speed)
-            # Add bobbing animation for walking backward
-            if on_ground:
-                self.root.setZ(
-                    math.sin(self.game.taskMgr.globalClock.getFrameTime() * 10) * 0.05
-                )
 
         if keys["left"]:
             self.root.setPos(self.root.getPos() - right_vec * dt * speed)
 
         if keys["right"]:
             self.root.setPos(self.root.getPos() + right_vec * dt * speed)
-
-        
+        blocked, groundHeight = self.checkObstacleCollision(self.root.getPos(), old_pos)
+        if blocked:
+            self.root.setPos(old_pos)
+        on_ground = self.root.getZ() <= groundHeight
+        if on_ground:
+            self.root.setZ(
+                math.sin(self.game.taskMgr.globalClock.getFrameTime() * 10) * 0.05
+            )
         jumping = keys.get("jump", False)
         # Jump input buffering
         if jumping:
@@ -204,8 +227,8 @@ class Player:
         # Update vertical position
         new_z = self.root.getZ() + self.z_velocity * dt
         # Check landing
-        if new_z <= 0.0:
-            new_z = 0.0
+        if new_z <= groundHeight + 0.01:
+            new_z = groundHeight
             self.z_velocity = 0.0
             self.is_jumping = False
 

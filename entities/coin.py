@@ -18,6 +18,7 @@ class CoinManager:
     def __init__(self, game):
         self.game = game
         self.terrainCoins = []
+        self.coin_radius = 2.5
 
         # Initialize terrain coins
         for _ in range(20):
@@ -211,7 +212,7 @@ class CoinManager:
         """Check if player has collected any terrain coins"""
         for coin in self.terrainCoins[:]:
             coin_pos = coin["model"].getPos()
-            if (coin_pos - player_pos).length() < 1.5:
+            if (coin_pos - player_pos).length() < self.coin_radius:
                 self.collectTerrainCoin(coin)
 
     def collectTerrainCoin(self, coin):

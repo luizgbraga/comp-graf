@@ -9,6 +9,7 @@ class BalloonManager:
         self.game = game
         self.balloons = []
         self.balloon_spawn_timer = 0
+        self.bob_amplitude = 0.02
 
         # Load the balloon model
         self.balloon_model = self.game.loader.loadModel("assets/models/balloon.bam")
@@ -202,12 +203,11 @@ class BalloonManager:
             base_speed = 2 + (self.game.score / 100)  # Starts at 2, gradually increases
             balloon_speed = base_speed * balloon["speed_multiplier"]
             balloon["model"].setPos(balloon_pos + direction * dt * balloon_speed)
-
             # Bob up and down
             current_z = balloon["model"].getZ()
             balloon["model"].setZ(
-                current_z
-                + math.sin(self.game.taskMgr.globalClock.getFrameTime() * 2) * 0.02
+                max(current_z, self.bob_amplitude + 1)
+                + math.sin(self.game.taskMgr.globalClock.getFrameTime() * 2) * self.bob_amplitude
             )
 
             # Update minimap balloon markers

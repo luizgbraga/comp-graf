@@ -39,6 +39,7 @@ class MonkeyDartGame(ShowBase):
         self.current_weapon_index = 0
 
         # Create all components in a specific order to avoid dependency issues
+        self.obstacles = []
         self.setupScene()
         self.player = Player(self)
         self.balloonManager = BalloonManager(self)
@@ -102,6 +103,7 @@ class MonkeyDartGame(ShowBase):
             tree.setPos(tx, ty, -0.2)  # Moved down slightly
             # Random rotation for variety
             tree.setH(random.uniform(0, 360))
+            self.obstacles.append((tree, 1.5, 5.0))
 
             # Sunflowers
             sunflower = self.sunflower_model.copyTo(self.render)
@@ -118,6 +120,7 @@ class MonkeyDartGame(ShowBase):
             rock.setPos(rx, ry, -0.4)
             rock.setH(random.uniform(0, 360))
             rock.setScale(random.uniform(0.8, 1.2))  # Random size variation
+            self.obstacles.append((rock, 2.0, 1.7))
 
         # Set up lighting
         ambientLight = AmbientLight("ambient light")
@@ -191,7 +194,6 @@ class MonkeyDartGame(ShowBase):
         right.setColor(*color)
 
         return box
-
     def updateGame(self, task):
         """Main game update loop"""
         if self.gameState != "playing":
@@ -205,7 +207,6 @@ class MonkeyDartGame(ShowBase):
         self.balloonManager.update(dt)
         self.projectileManager.update(dt)
         self.coinManager.checkCollisions(self.player.root.getPos())
-
         return Task.cont
 
     def startGame(self):
