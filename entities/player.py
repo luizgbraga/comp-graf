@@ -191,31 +191,31 @@ class Player:
         blocked, groundHeight = self.checkObstacleCollision(self.root.getPos(), old_pos)
         if blocked:
             self.root.setPos(old_pos)
-        on_ground = self.root.getZ() <= groundHeight
+        on_ground = self.root.getZ() <= groundHeight + 0.01
         if on_ground:
             self.root.setZ(
-                math.sin(self.game.taskMgr.globalClock.getFrameTime() * 10) * 0.05
+                math.sin(self.game.taskMgr.globalClock.getFrameTime() * 10) * 0.05 + self.root.getZ()
             )
-        jumping = keys.get("jump", False)
+        jumping = keys.get("jump", False) or (self.buffer_timer > 0 and self.buffer_timer < self.max_jump_buffer_time)
         # Jump input buffering
-        if jumping:
+        if self.is_jumping:
             self.buffer_timer += dt
         else:
             self.buffer_timer = 0.0
 
         # Attempt jump if buffered and allowed
-        if on_ground and not self.is_jumping and self.buffer_timer > 0 and self.buffer_timer < self.max_jump_buffer_time:
-            self.is_jumping = True
-            self.z_velocity = self.jump_speed
-            self.jump_timer = 0.0
-            self.buffer_timer = 0.0
-
-        # Variable jump height
         if self.is_jumping and jumping and self.jump_timer < self.max_jump_hold:
             self.jump_timer += dt
             gravity_scale = self.gravity_scale
         else:
             gravity_scale = 1.0
+
+        if on_ground and not self.is_jumping and jumping:
+            self.is_jumping = True
+            self.z_velocity = self.jump_speed
+            self.jump_timer = 0.0
+            self.buffer_timer = 0.0
+            
         if self.is_jumping and not jumping:
             self.jump_timer = 0.0
             self.is_jumping = False
@@ -227,7 +227,7 @@ class Player:
         # Update vertical position
         new_z = self.root.getZ() + self.z_velocity * dt
         # Check landing
-        if new_z <= groundHeight + 0.01:
+        if new_z <= groundHeight + 0.01 and not jumping:
             new_z = groundHeight
             self.z_velocity = 0.0
             self.is_jumping = False
@@ -236,10 +236,9 @@ class Player:
         playerPos = self.root.getPos()
         playerPos.x = max(-75, min(75, playerPos.x))
         playerPos.y = max(-75, min(75, playerPos.y))
-
-        # Make sure player is at correct z height
         playerPos.z = new_z
         self.root.setPos(playerPos)
+        self.root.setZ(new_z)
 
     def switchCamera(self):
         """Cycle through camera modes"""
