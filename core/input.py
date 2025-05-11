@@ -15,6 +15,7 @@ class InputController:
             "shoot": False,
             "switchCamera": False,
             "weaponMenu": False,
+            "zoom": False,
         }
 
         # Set up key bindings
@@ -54,6 +55,8 @@ class InputController:
         self.game.accept("tab-up", self.updateKeyMap, ["weaponMenu", False])
         self.game.accept("space", self.updateKeyMap, ["jump", True])
         self.game.accept("space-up", self.updateKeyMap, ["jump", False])
+        self.game.accept("z", self.updateKeyMap, ["zoom", True])
+        self.game.accept("z-up", self.updateKeyMap, ["zoom", False])
 
     def setupCrosshair(self):
         """Create a crosshair for aiming"""

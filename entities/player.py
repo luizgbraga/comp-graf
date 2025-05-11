@@ -14,6 +14,12 @@ class Player:
         self.jump_buffer_time = 0.1  # buffer jump input before landing
         self.playerHeight = 0.5
 
+        # Zoom settings
+        self.is_zoomed = False
+        self.normal_fov = 60
+        self.zoom_fov = 30
+        self.zoom_speed = 5  # How fast to transition between FOVs
+
         # Vertical state
         self.z_velocity = 0.0
         self.jump_timer = self.max_jump_hold
@@ -163,6 +169,14 @@ class Player:
 
     def update(self, dt, keys):
         """Update player movement and state"""
+        # Handle zoom
+        if keys["zoom"] and not self.is_zoomed:
+            self.is_zoomed = True
+            self.game.camLens.setFov(self.zoom_fov)
+        elif not keys["zoom"] and self.is_zoomed:
+            self.is_zoomed = False
+            self.game.camLens.setFov(self.normal_fov)
+
         # Move the player based on the key presses
         speed = 8
 
@@ -327,3 +341,5 @@ class Player:
         self.firstPersonCamNode.setP(0)
         self.switchToFirstPerson()
         self.switchWeapon("dart")
+        self.is_zoomed = False
+        self.game.camLens.setFov(self.normal_fov)
