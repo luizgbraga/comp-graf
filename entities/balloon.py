@@ -2,6 +2,7 @@ import math
 import random
 
 from direct.gui.DirectGui import DirectFrame
+from panda3d.core import CardMaker
 
 
 class BalloonManager:
@@ -111,14 +112,20 @@ class BalloonManager:
 
         # Add a minimap marker for this balloon
         marker = DirectFrame(
-            frameColor=(color[0], color[1], color[2], 0.8),
+            frameColor=(color[0], color[1], color[2], 1),  # Full opacity for frame
             frameSize=(-0.005, 0.005, -0.005, 0.005),
             parent=self.game.minimap.frame,
         )
 
         # Calculate minimap position
-        map_scale = 0.14 / 35  # Same scale as player marker
+        map_scale = 0.14 / 75  # Match player marker scale
         marker.setPos(0.15 + x * map_scale, 0, -0.15 - y * map_scale)
+
+        # Create the balloon square
+        cm = CardMaker("balloon_square")
+        cm.setFrame(-0.004, 0.004, -0.004, 0.004)  # Slightly smaller than frame
+        balloon_square = marker.attachNewNode(cm.generate())
+        balloon_square.setColor(color[0], color[1], color[2], 0.8)  # Slightly transparent
 
         # Store balloon and its properties
         self.balloons.append(
@@ -212,10 +219,15 @@ class BalloonManager:
 
             # Update minimap balloon markers
             balloon_pos = balloon["model"].getPos()
-            map_scale = 0.14 / 35  # Same scale as player marker
-            balloon["minimap_marker"].setPos(
-                0.15 + balloon_pos.x * map_scale, 0, -0.15 - balloon_pos.y * map_scale
-            )
+            map_scale = 0.14 / 75  # Match player marker scale
+            x_pos = 0.15 + balloon_pos.x * map_scale
+            y_pos = -0.15 - balloon_pos.y * map_scale
+            
+            # Clamp positions to keep markers within minimap bounds
+            x_pos = max(0.01, min(0.29, x_pos))
+            y_pos = max(-0.29, min(-0.01, y_pos))
+            
+            balloon["minimap_marker"].setPos(x_pos, 0, y_pos)
 
             # Check if the balloon reached the player
             if (balloon_pos - player_pos).length() < 1.5:
