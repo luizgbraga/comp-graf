@@ -6,7 +6,6 @@ class Minimap:
     def __init__(self, game):
         self.game = game
 
-        # Create minimap frame
         self.frame = DirectFrame(
             frameColor=(0, 0, 0, 0.5),
             frameSize=(0, 0.3, -0.3, 0),
@@ -14,7 +13,7 @@ class Minimap:
             parent=game.aspect2d,
         )
 
-        # Add a background for the map
+        # Background
         cm = CardMaker("minimap_card")
         cm.setFrame(0, 0.28, -0.28, 0)
         self.map_card = self.frame.attachNewNode(cm.generate())
@@ -39,19 +38,15 @@ class Minimap:
         self.hide()
 
     def updatePlayerMarker(self, player_pos, heading):
-        """Update the player marker on the minimap"""
         map_scale = 0.14 / 75  # 0.14 is half the map size, 75 is half the terrain size
         self.player_marker.setPos(
             0.15 + player_pos.x * map_scale, 0, -0.15 - player_pos.y * map_scale
         )
 
-        # Rotate marker to match player heading
         self.player_marker.setR(-heading)
 
     def show(self):
-        """Show the minimap"""
         self.frame.show()
 
     def hide(self):
-        """Hide the minimap"""
         self.frame.hide()

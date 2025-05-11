@@ -212,7 +212,7 @@ class MonkeyDartGame(ShowBase):
     def startGame(self):
         """Start or restart the game"""
         self.gameState = "playing"
-        self.menuManager.hideMenu()
+        self.menuManager.hideMainMenu()
         self.hud.show()
         self.minimap.show()
 
@@ -251,7 +251,7 @@ class MonkeyDartGame(ShowBase):
         """Return to the main menu"""
         self.menuManager.hideGameOver()
         self.gameState = "menu"
-        self.menuManager.showMenu()
+        self.menuManager.showMainMenu()
         self.inputController.hideMouseCursor(False)  # Show cursor
 
     def upgradeWeapon(self):

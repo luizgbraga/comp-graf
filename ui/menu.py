@@ -8,7 +8,6 @@ from direct.gui.DirectGui import (
 )
 from panda3d.core import TextNode
 
-# Color constants for consistent theming
 MENU_BG_COLOR = (0.1, 0.1, 0.1, 0.9)
 BUTTON_COLOR = (0.2, 0.2, 0.2, 0.8)
 BUTTON_HOVER_COLOR = (0.3, 0.3, 0.3, 0.8)
@@ -31,7 +30,6 @@ class MenuManager:
         self.setupRulesMenu()
 
     def createButton(self, text, pos, command=None, parent=None, scale=0.07):
-        """Helper method to create consistent buttons"""
         return DirectButton(
             text=text,
             scale=scale,
@@ -47,7 +45,6 @@ class MenuManager:
         )
 
     def createLabel(self, text, pos, parent=None, scale=0.07, align=TextNode.ACenter):
-        """Helper method to create consistent labels"""
         return DirectLabel(
             text=text,
             scale=scale,
@@ -59,7 +56,6 @@ class MenuManager:
         )
 
     def setupMainMenu(self):
-        """Create the main menu UI"""
         self.main_menu = DirectDialog(
             frameSize=(-0.7, 0.7, -0.7, 0.7),
             fadeScreen=0.4,
@@ -123,7 +119,6 @@ class MenuManager:
         )
 
     def setupWeaponMenu(self):
-        """Create the weapon selection menu UI"""
         self.weapon_menu = DirectDialog(
             frameSize=(-0.5, 0.5, -0.5, 0.5),
             fadeScreen=0.4,
@@ -153,7 +148,6 @@ class MenuManager:
         self.weapon_menu.hide()
 
     def updateWeaponButtons(self):
-        """Update the weapon buttons based on owned weapons"""
         # Remove old buttons
         for button in self.weaponButtons.values():
             button.destroy()
@@ -177,21 +171,18 @@ class MenuManager:
             y_pos -= 0.2
 
     def selectWeapon(self, weapon):
-        """Switch to selected weapon"""
         self.game.weaponType = weapon
         self.game.player.switchWeapon(weapon)
         self.game.hud.updateWeapon(weapon)
         self.hideWeaponMenu()
 
     def showWeaponMenu(self):
-        """Show the weapon selection menu"""
         if self.game.gameState == "playing":
             self.updateWeaponButtons()
             self.weapon_menu.show()
             self.game.inputController.hideMouseCursor(False)  # Show cursor
 
     def hideWeaponMenu(self):
-        """Hide the weapon selection menu"""
         self.weapon_menu.hide()
         if self.game.gameState == "playing":
             self.game.inputController.hideMouseCursor(
@@ -199,7 +190,6 @@ class MenuManager:
             )  # Hide cursor in first-person
 
     def showGameOver(self, score):
-        """Create and show game over screen"""
         self.game_over_menu = DirectDialog(
             frameSize=(-0.7, 0.7, -0.7, 0.7),
             fadeScreen=0.4,
@@ -264,22 +254,18 @@ class MenuManager:
         )
 
     def showStore(self):
-        """Show the store menu"""
         self.main_menu.hide()
         self.store_menu.show()
         self.updateStoreCoins()
 
     def hideStore(self):
-        """Hide the store menu"""
         self.store_menu.hide()
         self.main_menu.show()
 
     def updateStoreCoins(self):
-        """Update the coins display in the store"""
         self.store_coin_label.setText(f"Coins: {self.game.coins}")
 
     def buyKatana(self):
-        """Buy the katana if player has enough coins"""
         if self.game.coins >= 50 and "katana" not in self.game.owned_weapons:
             self.game.coins -= 50
             self.game.owned_weapons.append("katana")
@@ -290,24 +276,20 @@ class MenuManager:
                 self.game.player.weapon_holder.getPos(self.game.render)
             )
 
-    def hideMenu(self):
-        """Hide the main menu"""
+    def hideMainMenu(self):
         if self.main_menu:
             self.main_menu.hide()
 
-    def showMenu(self):
-        """Show the main menu"""
+    def showMainMenu(self):
         if self.main_menu:
             self.main_menu.show()
 
     def hideGameOver(self):
-        """Hide the game over screen"""
         if self.game_over_menu:
             self.game_over_menu.destroy()
             self.game_over_menu = None
 
     def setupStoreMenu(self):
-        """Create the store menu UI"""
         self.store_menu = DirectDialog(
             frameSize=(-0.7, 0.7, -0.7, 0.7),
             fadeScreen=0.4,
@@ -381,7 +363,6 @@ class MenuManager:
             scale=0.07,
         )
 
-        # Hide initially
         self.store_menu.hide()
 
     def setupRulesMenu(self):
@@ -428,15 +409,12 @@ class MenuManager:
             scale=0.07,
         )
 
-        # Hide initially
         self.rules_menu.hide()
 
     def showRules(self):
-        """Show the rules menu"""
         self.main_menu.hide()
         self.rules_menu.show()
 
     def hideRules(self):
-        """Hide the rules menu"""
         self.rules_menu.hide()
         self.main_menu.show()

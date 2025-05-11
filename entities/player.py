@@ -133,6 +133,7 @@ class Player:
         # Top-down camera (above player)
         self.topDownCamNode = self.root.attachNewNode("top_down_cam")
         self.topDownCamNode.setPos(0, 0, 15)
+
     def checkObstacleCollision(self, playerPos, oldPos):
         """
         Check for collision between player position and any obstacles.
@@ -160,6 +161,7 @@ class Player:
                     return False, groundHeight
                 return True, groundHeight
         return False, groundHeight
+
     def update(self, dt, keys):
         """Update player movement and state"""
         # Move the player based on the key presses
@@ -251,7 +253,6 @@ class Player:
             self.switchToFirstPerson()
 
     def switchToFirstPerson(self):
-        """Switch to first-person view"""
         self.camera_mode = "first-person"
         self.camera.reparentTo(self.firstPersonCamNode)
         self.camera.setPos(0, 0, 0)
@@ -271,7 +272,6 @@ class Player:
         self.game.win.requestProperties(props)
 
     def switchToThirdPerson(self):
-        """Switch to third-person view"""
         self.camera_mode = "third-person"
         self.camera.reparentTo(self.thirdPersonCamNode)
         self.camera.setPos(0, 0, 0)
@@ -311,7 +311,6 @@ class Player:
         self.game.win.requestProperties(props)
 
     def switchWeapon(self, weaponType):
-        """Switch between dart gun and katana"""
         if weaponType == "dart":
             self.dart_gun.show()
             self.katana.hide()
@@ -320,7 +319,6 @@ class Player:
             self.katana.show()
 
     def reset(self):
-        """Reset player for new game"""
         self.root.setPos(0, 0, 0)
         self.heading = 0
         self.pitch = 0

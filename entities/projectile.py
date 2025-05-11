@@ -18,7 +18,6 @@ class ProjectileManager:
         self.canShoot = True
         self.lastShootTime = 0
 
-        # Weapon properties
         self.weaponProperties = {
             "dart": {
                 "damage": 1,
@@ -39,15 +38,12 @@ class ProjectileManager:
         }
 
     def shootProjectile(self):
-        """Fire a projectile based on the current weapon"""
         if not self.canShoot or self.game.gameState != "playing":
             return
 
-        # Get weapon type and properties
         weaponType = self.game.weaponType
         weaponProps = self.weaponProperties[weaponType]
 
-        # Create projectile model
         projectile_model = self.game.createBox(
             weaponProps["size"][0],
             weaponProps["size"][1],
@@ -123,7 +119,6 @@ class ProjectileManager:
         self.lastShootTime = self.game.taskMgr.globalClock.getFrameTime()
 
     def createShootEffect(self, position, direction):
-        """Create visual effect when shooting"""
         # Create a quick muzzle flash effect
         flash = self.game.createBox(0.2, 0.2, 0.2, (1, 0.8, 0, 0.8))  # Yellow-orange
         flash.reparentTo(self.game.render)
@@ -166,7 +161,6 @@ class ProjectileManager:
             particle_seq.start()
 
     def createBalloonPopEffect(self, position, color):
-        """Create effect for balloon popping"""
         # Create a simple balloon pop effect using custom particles
         for _ in range(12):
             # Create small fragments of the balloon
@@ -235,7 +229,6 @@ class ProjectileManager:
                     self.projectiles.remove(projectile)
 
     def reset(self):
-        """Clear all projectiles"""
         for projectile in self.projectiles:
             projectile["model"].removeNode()
         self.projectiles = []

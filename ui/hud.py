@@ -12,7 +12,7 @@ class HUD:
             parent=game.a2dTopLeft,
         )
 
-        # Background frame for HUD elements
+        # Background
         self.hud_bg = DirectFrame(
             frameColor=(0, 0, 0, 0.5),
             frameSize=(0, 0.4, -0.45, 0.05),  # Adjusted to cover full height
@@ -72,31 +72,24 @@ class HUD:
         self.hide()
 
     def updateScore(self, score):
-        """Update the score display"""
         self.scoreText["text"] = f"Score: {score}"
 
     def updateCoins(self, coins):
-        """Update the coins display"""
         self.coinsText["text"] = f"Coins: {coins}"
 
     def updateWeapon(self, weapon_type):
-        """Update the weapon display"""
         self.weaponText["text"] = f"Weapon: {weapon_type.capitalize()}"
 
     def updateCameraText(self, camera_mode):
-        """Update the camera mode display"""
         self.cameraText["text"] = f"Camera: {camera_mode}"
 
     def show(self):
-        """Show the HUD"""
         self.frame.show()
 
     def hide(self):
-        """Hide the HUD"""
         self.frame.hide()
 
     def disableUpgradeButton(self):
-        """Disable the upgrade button in the store"""
         if hasattr(self.game, "menuManager") and hasattr(
             self.game.menuManager, "store"
         ):
