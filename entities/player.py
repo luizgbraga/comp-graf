@@ -7,20 +7,19 @@ class Player:
     def __init__(self, game):
         self.game = game
 
-        self.gravity = 22        # gravity acceleration
-        self.jump_speed = 7      # initial jump velocity
-        self.max_jump_hold = 0.4    # max duration to hold jump for variable height
+        self.gravity = 22  # gravity acceleration
+        self.jump_speed = 7  # initial jump velocity
+        self.max_jump_hold = 0.4  # max duration to hold jump for variable height
         self.gravity_scale = 0.3
-        self.jump_buffer_time = 0.1   # buffer jump input before landing
+        self.jump_buffer_time = 0.1  # buffer jump input before landing
         self.playerHeight = 0.5
 
         # Vertical state
         self.z_velocity = 0.0
         self.jump_timer = self.max_jump_hold
-        self.buffer_timer = 0.0       # how long since jump was pressed on air
+        self.buffer_timer = 0.0  # how long since jump was pressed on air
         self.max_jump_buffer_time = 0.2  # max time to buffer jump input
         self.is_jumping = False
-
 
         # Create a model for the player (monkey) using simple shapes
         self._createModel()
@@ -155,7 +154,7 @@ class Player:
             old_distance_sq = dx_old * dx_old + dy_old * dy_old
 
             if distance_sq < radius * radius:
-                if pz + 0.01> height:
+                if pz + 0.01 > height:
                     if old_distance_sq < radius * radius:
                         return False, groundHeight + height
                     return False, groundHeight
@@ -196,9 +195,12 @@ class Player:
         on_ground = self.root.getZ() <= groundHeight + 0.01
         if on_ground:
             self.root.setZ(
-                math.sin(self.game.taskMgr.globalClock.getFrameTime() * 10) * 0.05 + self.root.getZ()
+                math.sin(self.game.taskMgr.globalClock.getFrameTime() * 10) * 0.05
+                + self.root.getZ()
             )
-        jumping = keys.get("jump", False) or (self.buffer_timer > 0 and self.buffer_timer < self.max_jump_buffer_time)
+        jumping = keys.get("jump", False) or (
+            self.buffer_timer > 0 and self.buffer_timer < self.max_jump_buffer_time
+        )
         # Jump input buffering
         if self.is_jumping:
             self.buffer_timer += dt
@@ -217,12 +219,12 @@ class Player:
             self.z_velocity = self.jump_speed
             self.jump_timer = 0.0
             self.buffer_timer = 0.0
-            
+
         if self.is_jumping and not jumping:
             self.jump_timer = 0.0
             self.is_jumping = False
             self.buffer_timer = 0.0
-            
+
         # Apply gravity
         self.z_velocity -= self.gravity * gravity_scale * dt
 
@@ -261,11 +263,11 @@ class Player:
         if hasattr(self.game, "hud"):
             self.game.hud.updateCameraText("First-Person")
 
-        # Show crosshair
+        # Show crosshair in all camera modes
         if hasattr(self.game, "inputController"):
             self.game.inputController.setCrosshairVisible(True)
 
-        # Hide mouse cursor for first-person view
+        # Hide mouse cursor for all camera modes
         props = WindowProperties()
         props.setCursorHidden(True)
         self.game.win.requestProperties(props)
@@ -280,13 +282,13 @@ class Player:
         if hasattr(self.game, "hud"):
             self.game.hud.updateCameraText("Third-Person")
 
-        # Hide crosshair
+        # Show crosshair in all camera modes
         if hasattr(self.game, "inputController"):
-            self.game.inputController.setCrosshairVisible(False)
+            self.game.inputController.setCrosshairVisible(True)
 
-        # Show mouse cursor in third-person
+        # Keep mouse cursor hidden for consistent control
         props = WindowProperties()
-        props.setCursorHidden(False)
+        props.setCursorHidden(True)
         self.game.win.requestProperties(props)
 
     def switchToTopDown(self):
@@ -300,13 +302,13 @@ class Player:
         if hasattr(self.game, "hud"):
             self.game.hud.updateCameraText("Top-Down")
 
-        # Hide crosshair
+        # Show crosshair in all camera modes
         if hasattr(self.game, "inputController"):
-            self.game.inputController.setCrosshairVisible(False)
+            self.game.inputController.setCrosshairVisible(True)
 
-        # Show mouse cursor in top-down
+        # Keep mouse cursor hidden for consistent control
         props = WindowProperties()
-        props.setCursorHidden(False)
+        props.setCursorHidden(True)
         self.game.win.requestProperties(props)
 
     def switchWeapon(self, weaponType):

@@ -194,6 +194,7 @@ class MonkeyDartGame(ShowBase):
         right.setColor(*color)
 
         return box
+
     def updateGame(self, task):
         """Main game update loop"""
         if self.gameState != "playing":

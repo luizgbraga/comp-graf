@@ -121,10 +121,17 @@ class InputController:
                 self.player.root.setH(self.heading)
                 self.player.firstPersonCamNode.setP(self.pitch)
 
+                # Center the crosshair
+                self.crosshair_node.setPos(0, 0, 0)
+
             elif self.player.camera_mode == "third-person":
                 # In third-person, rotate the player with the mouse
                 self.heading -= dx * self.mouseSensitivity * 100
                 self.player.root.setH(self.heading)
+
+                # Update pitch for aiming
+                self.pitch += dy * self.mouseSensitivity * 100
+                self.pitch = max(-80, min(80, self.pitch))
 
                 # Adjust camera height based on vertical mouse movement
                 currentPos = self.player.thirdPersonCamNode.getPos()
@@ -134,6 +141,9 @@ class InputController:
 
                 # Make the camera look at the player's head
                 self.game.camera.lookAt(self.player.player_head)
+
+                # Position crosshair at mouse position
+                self.crosshair_node.setPos(x, 0, y)
 
             elif self.player.camera_mode == "top-down":
                 # In top-down, adjust zoom with vertical mouse movement
@@ -146,6 +156,9 @@ class InputController:
                 # Look directly at the player
                 self.game.camera.lookAt(self.player.root)
 
+                # Position crosshair at mouse position
+                self.crosshair_node.setPos(x, 0, y)
+
             # Store the mouse position for the next frame
             self.last_mouse_x = x
             self.last_mouse_y = y
@@ -155,10 +168,8 @@ class InputController:
                 self.player.root.getPos(), self.heading
             )
 
-            # If in first-person mode, recenter the mouse if needed
-            if self.player.camera_mode == "first-person" and (
-                abs(x) > 0.9 or abs(y) > 0.9
-            ):
+            # Recenter the mouse if it's too close to the edge in any camera mode
+            if abs(x) > 0.9 or abs(y) > 0.9:
                 x_size = self.game.win.getXSize()
                 y_size = self.game.win.getYSize()
                 self.game.win.movePointer(0, x_size // 2, y_size // 2)
