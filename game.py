@@ -12,8 +12,11 @@ from panda3d.core import (
 )
 
 from core.input import InputController
+from core.effects import Effects
 from entities.balloon import BalloonManager
 from entities.coin import CoinManager
+from entities.heart import HeartManager
+from entities.katana import KatanaManager
 from entities.player import Player
 from entities.projectile import ProjectileManager
 from ui.hud import HUD
@@ -33,7 +36,7 @@ class MonkeyDartGame(ShowBase):
 
         # Game variables
         self.score = 0
-        self.coins = 0
+        self.coins = 1000
         self.weaponType = "dart"
         self.owned_weapons = ["dart"]  # Start with dart gun
         self.current_weapon_index = 0
@@ -44,11 +47,15 @@ class MonkeyDartGame(ShowBase):
         self.player = Player(self)
         self.balloonManager = BalloonManager(self)
         self.projectileManager = ProjectileManager(self)
+        self.screenEffects = Effects(self)
         self.coinManager = CoinManager(self)
+        self.heartManager = HeartManager(self)
+        self.katanaManager = KatanaManager(self)
         self.menuManager = MenuManager(self)
         self.hud = HUD(self)
         self.minimap = Minimap(self)
         self.inputController = InputController(self, self.player)
+        self.playerInvulnerable = False  # Player invulnerability state
 
         # Initialize player's camera after HUD is created
         self.player.initializeCamera()
@@ -60,7 +67,15 @@ class MonkeyDartGame(ShowBase):
         props = WindowProperties()
         props.setCursorHidden(False)
         self.win.requestProperties(props)
-
+    def pauseGame(self):
+        """Pause the game"""
+        self.gameState = "paused" if self.gameState == "playing" else "playing"
+        if self.gameState == "paused":
+            self.menuManager.showPauseMenu()
+            self.inputController.hideMouseCursor(False)
+        else:
+            self.menuManager.hidePauseMenu()
+            self.inputController.hideMouseCursor(True)
     def setupScene(self):
         # Create a simple ground plane
         cm = CardMaker("ground")
@@ -103,7 +118,7 @@ class MonkeyDartGame(ShowBase):
             tree.setPos(tx, ty, -0.2)  # Moved down slightly
             # Random rotation for variety
             tree.setH(random.uniform(0, 360))
-            self.obstacles.append((tree, 1.5, 5.0))
+            self.obstacles.append((tree, 1.5, 3))
 
             # Sunflowers
             sunflower = self.sunflower_model.copyTo(self.render)
@@ -120,7 +135,7 @@ class MonkeyDartGame(ShowBase):
             rock.setPos(rx, ry, -0.4)
             rock.setH(random.uniform(0, 360))
             rock.setScale(random.uniform(0.8, 1.2))  # Random size variation
-            self.obstacles.append((rock, 2.0, 1.7))
+            self.obstacles.append((rock, 2.0, 0.5))
 
         # Set up lighting
         ambientLight = AmbientLight("ambient light")
@@ -199,7 +214,7 @@ class MonkeyDartGame(ShowBase):
         """Main game update loop"""
         if self.gameState != "playing":
             return Task.cont
-
+        self.screenEffects.balloonAlert()
         # Get the time since the last frame
         dt = task.time - task.lastTime if hasattr(task, "lastTime") else 0
         task.lastTime = task.time
@@ -208,7 +223,27 @@ class MonkeyDartGame(ShowBase):
         self.balloonManager.update(dt)
         self.projectileManager.update(dt)
         self.coinManager.checkCollisions(self.player.root.getPos())
+        self.heartManager.checkCollisions(self.player.root.getPos())
+        self.katanaManager.checkCollisions(self.player.root.getPos())
+        # Random chance to spawn a health box
+        # if random.randint(1, 500) == 1:
+            # self.spawnHealthBox()
         return Task.cont
+
+    # def spawnHealthBox(self):
+    #     health_box = self.createBox(1, 1, 1, color=(0, 1, 0, 1))
+    #     health_box.setPos(random.uniform(-75, 75), random.uniform(-75, 75), 0)
+    #     self.health_boxes.append(health_box)
+    #     health_box.reparentTo(self.render)
+    #     # Add a task to remove the health box after 30 seconds
+    #     self.taskMgr.doMethodLater(
+    #         30, self.removeHealthBox, "remove_health_box", extraArgs=[health_box]
+    #     )
+    # def removeHealthBox(self, health_box):
+    #     """Remove the health box after a delay"""
+    #     if health_box in self.health_boxes:
+    #         health_box.removeNode()
+    #         self.health_boxes.remove(health_box)
 
     def startGame(self):
         """Start or restart the game"""
@@ -232,6 +267,7 @@ class MonkeyDartGame(ShowBase):
         self.hud.updateScore(self.score)
         self.hud.updateCoins(self.coins)
         self.hud.updateWeapon(self.weaponType)
+        self.hud.refreshHearts()
 
     def gameOver(self):
         """Handle game over state"""
@@ -253,6 +289,7 @@ class MonkeyDartGame(ShowBase):
         self.menuManager.hideGameOver()
         self.gameState = "menu"
         self.menuManager.showMainMenu()
+        self.menuManager.hidePauseMenu()
         self.inputController.hideMouseCursor(False)  # Show cursor
 
     def upgradeWeapon(self):
@@ -261,7 +298,7 @@ class MonkeyDartGame(ShowBase):
             self.coins -= 50
             self.weaponType = "katana"
             self.owned_weapons.append("katana")  # Add katana to owned weapons
-
+            self.player.hasKatana = True
             # Update player weapon
             self.player.switchWeapon(self.weaponType)
 

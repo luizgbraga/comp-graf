@@ -55,9 +55,10 @@ class InputController:
         self.game.accept("tab-up", self.updateKeyMap, ["weaponMenu", False])
         self.game.accept("space", self.updateKeyMap, ["jump", True])
         self.game.accept("space-up", self.updateKeyMap, ["jump", False])
-        self.game.accept("z", self.updateKeyMap, ["zoom", True])
-        self.game.accept("z-up", self.updateKeyMap, ["zoom", False])
-
+        self.game.accept("mouse3", self.updateKeyMap, ["zoom", True])
+        self.game.accept("mouse3-up", self.updateKeyMap, ["zoom", False])
+        self.game.accept("escape", self.game.pauseGame, [])
+        
     def setupCrosshair(self):
         """Create a crosshair for aiming"""
         self.crosshair_node = NodePath("crosshair")
@@ -89,8 +90,10 @@ class InputController:
         self.keyMap[key] = value
         # Handle one-shot actions
         if key == "shoot" and value and self.game.gameState == "playing":
-            self.game.projectileManager.shootProjectile()
-
+            if self.player.currentWeapon == "dart":
+                self.game.projectileManager.shootProjectile()
+            elif self.player.currentWeapon == "katana":
+                self.player.swingKatana()
         if key == "switchCamera" and value and self.game.gameState == "playing":
             self.player.switchCamera()
 

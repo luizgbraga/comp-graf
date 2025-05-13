@@ -6,13 +6,14 @@ from panda3d.core import NodePath, Point3, WindowProperties
 class Player:
     def __init__(self, game):
         self.game = game
-
+        self.health = 3
         self.gravity = 22  # gravity acceleration
         self.jump_speed = 7  # initial jump velocity
         self.max_jump_hold = 0.4  # max duration to hold jump for variable height
         self.gravity_scale = 0.3
         self.jump_buffer_time = 0.1  # buffer jump input before landing
         self.playerHeight = 0.5
+        self.hasKatana = False
 
         # Zoom settings
         self.is_zoomed = False
@@ -39,7 +40,7 @@ class Player:
         # Initial heading and pitch
         self.heading = 0
         self.pitch = 0
-
+        self.currentWeapon = "dart"
         # Current camera mode
         self.camera_mode = "first-person"
         self.camera = game.camera
@@ -78,11 +79,11 @@ class Player:
         # Legs
         self.player_leg_r = self.game.createBox(0.18, 0.18, 0.5, (0.6, 0.45, 0.3, 1))
         self.player_leg_r.reparentTo(self.root)
-        self.player_leg_r.setPos(0.2, 0, 0.25)
+        self.player_leg_r.setPos(0.2, 0, 0)
 
         self.player_leg_l = self.game.createBox(0.18, 0.18, 0.5, (0.6, 0.45, 0.3, 1))
         self.player_leg_l.reparentTo(self.root)
-        self.player_leg_l.setPos(-0.2, 0, 0.25)
+        self.player_leg_l.setPos(-0.2, 0, 0)
 
         # Weapon holder
         self.weapon_holder = NodePath("weapon_holder")
@@ -138,9 +139,96 @@ class Player:
         # Top-down camera (above player)
         self.topDownCamNode = self.root.attachNewNode("top_down_cam")
         self.topDownCamNode.setPos(0, 0, 15)
-
+    def takeHealthBox(self, health):
+        self.health = max(self.health + health, 3)
+    def takesDamage(self, damage):
+        # when player takes damage he bounces and tilts the camera to simulate a hit
+        # Bounce effect
+        self.root.setZ(self.root.getZ() + 0.5)
+        self.root.setH(self.root.getH() + 1)
+        # Tilt camera
+        self.game.camera.setH(self.game.camera.getH() + 1)
+        # Reset camera tilt after a short delay
+        self.game.taskMgr.doMethodLater(
+            0.1,
+            lambda task: self.game.camera.setH(self.game.camera.getH() - 1),
+            "reset_camera_tilt",
+        )
+        # Reset bounce effect
+        self.game.taskMgr.doMethodLater(
+            0.2,
+            lambda task: self.root.setZ(self.root.getZ() - 0.5),
+            "reset_bounce",
+        )
+        if self.game.playerInvulnerable:
+            return
+        self.health -= damage
+        self.game.hud.removeHeart()
+        if self.health <= 0:
+            self.game.gameOver()
+            return
+        # make player invulnerable for a short time
+        self.game.playerInvulnerable = True
+        self.game.taskMgr.doMethodLater(
+            1,
+            lambda task: setattr(self.game, "playerInvulnerable", False),
+            "reset_invulnerability",
+        )
+    def swingKatanaAnimation(self):
+        # self.katana.show()
+        self.game.taskMgr.doMethodLater(
+            0.05,
+            lambda task: self.katana.setH(self.katana.getH() - 30),
+            "swing_katana",
+        )
+        self.game.taskMgr.doMethodLater(
+            0.1,
+            lambda task: self.katana.setH(self.katana.getH() + 60),
+            "reset_katana",
+        )
+        self.game.taskMgr.doMethodLater(
+            0.2,
+            lambda task: self.katana.setH(self.katana.getH() - 30),
+            "reset_katana",
+        )
+        self.game.taskMgr.doMethodLater(
+            0.1,
+            lambda task: self.katana.setR(self.katana.getR() + 30),
+            "swing_katana",
+        )
+        self.game.taskMgr.doMethodLater(
+            0.2,
+            lambda task: self.katana.setR(self.katana.getR() - 30),
+            "reset_katana",
+        )
+        self.game.taskMgr.doMethodLater(
+            0.15,
+            lambda task: self.katana.setP(self.katana.getP() + 30),
+            "swing_katana",
+        )
+        self.game.taskMgr.doMethodLater(
+            0.2,
+            lambda task: self.katana.setP(self.katana.getP() - 30),
+            "reset_katana",
+        )
+        # self.katana.hide()
+    def swingKatana(self):
+        self.swingKatanaAnimation()
+        for balloon in self.game.balloonManager.balloons:
+            # check distance and direction into a cone range
+            playerToBallonVector = balloon["model"].getPos() - self.root.getPos()
+            playerToBallonVector.normalize()
+            # take dot product to check if the balloon is in front of the player
+            dot_product = playerToBallonVector.dot(self.camera.getQuat().getForward())
+            # print(self.camera.getQuat().getForward().getX(), ' ', self.camera.getQuat().getForward().getY())
+            # print(playerToBallonVector.getX(), ' ', playerToBallonVector.getY())
+            angle = math.acos(dot_product)
+            # print(math.fabs(angle)*180/math.pi)
+            if playerToBallonVector.length() < 2.0 and math.fabs(angle) < math.radians(45):
+                print('hit balloon: ', playerToBallonVector.length())
+                self.game.balloonManager.takeDamage(balloon, 2)
     def checkObstacleCollision(self, playerPos, oldPos):
-        """
+        """s
         Check for collision between player position and any obstacles.
         :param playerPos: LPoint3f or a tuple (x, y, z)
         :return: True if a collision is detected, otherwise False
@@ -257,7 +345,7 @@ class Player:
         playerPos.z = new_z
         self.root.setPos(playerPos)
         self.root.setZ(new_z)
-
+                
     def switchCamera(self):
         """Cycle through camera modes"""
         if self.camera_mode == "first-person":
@@ -329,14 +417,16 @@ class Player:
         if weaponType == "dart":
             self.dart_gun.show()
             self.katana.hide()
-        else:  # katana
+        elif self.hasKatana:
             self.dart_gun.hide()
             self.katana.show()
+        self.currentWeapon = weaponType
 
     def reset(self):
         self.root.setPos(0, 0, 0)
         self.heading = 0
         self.pitch = 0
+        self.health = 3
         self.root.setH(self.heading)
         self.firstPersonCamNode.setP(0)
         self.switchToFirstPerson()
