@@ -178,12 +178,12 @@ class Player:
         for balloon in self.game.balloonManager.balloons:
             # check distance and direction into a cone range
             balloonPos = balloon["model"].getPos()
-            balloonPos.setZ(0)
+            # balloonPos.setZ(0)
             playerPos = self.root.getPos()
-            playerPos.setZ(0)
+            # playerPos.setZ(0)
             to_balloon = balloonPos - playerPos 
             forward = self.camera.getQuat(self.game.render).getForward()
-            forward.setZ(0)
+            # forward.setZ(0)
             distance = to_balloon.length()
             forward.normalize()
             to_balloon.normalize()
@@ -197,7 +197,7 @@ class Player:
             # print()
             # if angle < 22.5:
                 # print("Balloon is within the 45° cone in front of the player")
-            if distance < 5.0 and angle < 30:
+            if distance < 10 and angle < 30:
                 self.game.balloonManager.takeDamage(balloon, 2)
 
     def checkObstacleCollision(self, playerPos, oldPos):
@@ -300,8 +300,8 @@ class Player:
             self.is_jumping = False
 
         playerPos = self.root.getPos()
-        playerPos.x = max(-75, min(75, playerPos.x))
-        playerPos.y = max(-75, min(75, playerPos.y))
+        playerPos.x = max(-80, min(80, playerPos.x))
+        playerPos.y = max(-80, min(80, playerPos.y))
         playerPos.z = new_z
         self.root.setPos(playerPos)
         self.root.setZ(new_z)

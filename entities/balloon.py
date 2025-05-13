@@ -14,7 +14,7 @@ class BalloonManager:
         self.balloons = []
         self.balloon_spawn_timer = 0
         self.bob_amplitude = 0.02
-
+        self.balloon_growth_timer = 0
         self.balloon_model = self.game.loader.loadModel("assets/models/balloon.bam")
 
         self.balloon_colors = [
@@ -209,9 +209,22 @@ class BalloonManager:
             self.game.hud.updateCoins(self.game.coins)
 
             self.removeBalloon(balloon)
-
+    def growBalloons(self):
+        for balloon in self.balloons:
+            # Increase health and max_health
+            balloon["max_health"] += 1
+            balloon["health"] += 1
+            # Scale up slightly (e.g., 5% per growth)
+            current_scale = balloon["model"].getScale()
+            new_scale = None
+            if current_scale.length() > 10.0:  # Prevent too large
+                new_scale = current_scale
+            else:
+                new_scale = current_scale * 1.1  # 5% larger
+            balloon["model"].setScale(new_scale)
     def update(self, dt):
         self.balloon_spawn_timer += dt
+        self.balloon_growth_timer += dt
 
         # Spawn new balloons
         # if not self.created:
@@ -221,7 +234,9 @@ class BalloonManager:
             self.balloon_spawn_timer = 0
             if len(self.balloons) < 10 + self.game.score // 10:
                 self.spawnBalloon()
-
+        if self.balloon_growth_timer > 10.0:
+            self.balloon_growth_timer = 0
+            self.growBalloons()
         for balloon in self.balloons[:]:
             player_pos = self.game.player.root.getPos()
             balloon_pos = balloon["model"].getPos()
