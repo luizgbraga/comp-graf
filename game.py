@@ -81,26 +81,14 @@ class MonkeyDartGame(ShowBase):
 
         # Load the tree model
         self.tree_model = self.loader.loadModel("assets/models/birch_tree.egg")
-        # Load the tree textures
-        leaf_texture = self.loader.loadTexture("assets/models/tex/tree_birch_leaf.png")
-        bark_texture = self.loader.loadTexture("assets/models/tex/tree_bark_65102.jpg")
-        self.tree_model.setTexture(leaf_texture)
-        # Apply bark texture to the trunk if the model supports multiple textures
-        if self.tree_model.find("**/trunk").is_empty():
-            self.tree_model.setTexture(
-                bark_texture, 1
-            )  # Apply to second texture stage if available
-
         # Load the sunflower model
         self.sunflower_model = self.loader.loadModel("assets/models/sunflower.bam")
 
-        # Load the rock model
-        self.rock_model = self.loader.loadModel("assets/models/rock.bam")
-        # Load and apply rock texture
-        rock_texture = self.loader.loadTexture("assets/models/rock.png")
-        self.rock_model.setTexture(rock_texture)
+        # Load the European cranberry bush model and its textures
+        self.cranberry_model = self.loader.loadModel("assets/models/european_cranberry_bush.egg")
+        # Load and apply textures
 
-        # Create trees, sunflowers, and rocks
+        # Create trees, sunflowers, and cranberry bushes
         for _ in range(50):  # Doubled the number of objects to maintain density
             # Trees
             tree = self.tree_model.copyTo(self.render)
@@ -121,14 +109,14 @@ class MonkeyDartGame(ShowBase):
             sunflower.setH(random.uniform(0, 360))
             sunflower.setScale(random.uniform(0.2, 0.3))  # Made flowers smaller
 
-            # Rocks
-            rock = self.rock_model.copyTo(self.render)
-            rx = random.uniform(-75, 75)  # Adjusted range to match new ground size
-            ry = random.uniform(-75, 75)
-            rock.setPos(rx, ry, -0.4)
-            rock.setH(random.uniform(0, 360))
-            rock.setScale(random.uniform(0.8, 1.2))  # Random size variation
-            self.obstacles.append((rock, 2.0, 1.7))
+            # Cranberry bushes - made larger and positioned higher
+            cranberry = self.cranberry_model.copyTo(self.render)
+            cx = random.uniform(-75, 75)  # Adjusted range to match new ground size
+            cy = random.uniform(-75, 75)
+            cranberry.setPos(cx, cy, 0.0)  # Raised position to be more visible
+            cranberry.setH(random.uniform(0, 360))
+            cranberry.setScale(random.uniform(2.0, 3.0))  # Made bushes larger
+            self.obstacles.append((cranberry, 2.0, 1.7))
 
         # Set up lighting
         ambientLight = AmbientLight("ambient light")
