@@ -24,6 +24,7 @@ class MenuManager:
         self.weapon_menu = None
         self.store_menu = None
         self.rules_menu = None
+        self.pause_menu = None
         self.setupMainMenu()
         self.setupWeaponMenu()
         self.setupStoreMenu()

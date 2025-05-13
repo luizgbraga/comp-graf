@@ -79,10 +79,10 @@ class BalloonManager:
                 break
 
         color = chosen_color["color"]
-        balloon_model.setColor(color[0], color[1], color[2], 1)  # Always fully opaque
+        balloon_model.setColor(color[0], color[1], color[2], 1)
 
         for child in balloon_model.findAllMatches("**"):
-            child.setColor(color[0], color[1], color[2], 1)  # Always fully opaque
+            child.setColor(color[0], color[1], color[2], 1)
 
         angle = random.uniform(0, 2 * math.pi)
 
@@ -100,18 +100,18 @@ class BalloonManager:
         balloon_model.setPos(x, y, z)
 
         marker = DirectFrame(
-            frameColor=(color[0], color[1], color[2], 1),  # Full opacity for frame
+            frameColor=(color[0], color[1], color[2], 1),
             frameSize=(-0.005, 0.005, -0.005, 0.005),
             parent=self.game.minimap.frame,
         )
 
-        map_scale = 0.14 / 75  # Match player marker scale
+        map_scale = 0.14 / 75
         marker.setPos(0.15 + x * map_scale, 0, -0.15 - y * map_scale)
 
         cm = CardMaker("balloon_square")
-        cm.setFrame(-0.004, 0.004, -0.004, 0.004)  # Slightly smaller than frame
+        cm.setFrame(-0.004, 0.004, -0.004, 0.004)
         balloon_square = marker.attachNewNode(cm.generate())
-        balloon_square.setColor(color[0], color[1], color[2], 1)  # Full opacity
+        balloon_square.setColor(color[0], color[1], color[2], 1)
 
         self.balloons.append(
             {
@@ -190,11 +190,9 @@ class BalloonManager:
         balloon["model"].setScale(current_scale)
 
         color = balloon["color"]
-        balloon["model"].setColor(
-            color[0], color[1], color[2], 1
-        )  # Always fully opaque
+        balloon["model"].setColor(color[0], color[1], color[2], 1)
         for child in balloon["model"].findAllMatches("**"):
-            child.setColor(color[0], color[1], color[2], 1)  # Always fully opaque
+            child.setColor(color[0], color[1], color[2], 1)
         self.balloonHitEffect(balloon)
 
         if balloon["health"] <= 0:
@@ -237,7 +235,7 @@ class BalloonManager:
             )
 
             balloon_pos = balloon["model"].getPos()
-            map_scale = 0.14 / 75  # Match player marker scale
+            map_scale = 0.14 / 75
             x_pos = 0.15 + balloon_pos.x * map_scale
             y_pos = -0.15 - balloon_pos.y * map_scale
 
@@ -247,7 +245,7 @@ class BalloonManager:
             balloon["minimap_marker"].setPos(x_pos, 0, y_pos)
 
             if (balloon_pos - player_pos).length() < 1.5:
-                self.game.player.takesDamage(1)  # Player takes damage
+                self.game.player.takesDamage(1)
                 return
 
     def removeBalloon(self, balloon):

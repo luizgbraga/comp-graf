@@ -39,7 +39,6 @@ class CoinManager:
             angle = (i / segments) * 2 * math.pi
             next_angle = ((i + 1) / segments) * 2 * math.pi
 
-            # Top face vertices
             vertex.addData3f(0, 0, thickness / 2)
             normal.addData3f(0, 0, 1)
             color.addData4f(1.0, 0.84, 0, 1)
@@ -180,7 +179,6 @@ class CoinManager:
         self.game.coins += 3
         self.game.hud.updateCoins(self.game.coins)
 
-        # Remove the coin
         coin.removeNode()
 
     def checkCollisions(self, player_pos):
@@ -190,7 +188,6 @@ class CoinManager:
                 self.collectTerrainCoin(coin)
 
     def collectTerrainCoin(self, coin):
-        # Create collection effect
         self.createCoinCollectionEffect(coin["pos"])
 
         coin["spin"].finish()
@@ -205,9 +202,7 @@ class CoinManager:
 
     def createCoinCollectionEffect(self, position):
         for i in range(8):
-            particle = self.game.createBox(
-                0.1, 0.1, 0.1, (1.0, 0.84, 0, 1)
-            )  # Gold color
+            particle = self.game.createBox(0.1, 0.1, 0.1, (1.0, 0.84, 0, 1))
             particle.reparentTo(self.game.render)
             particle.setPos(position)
 

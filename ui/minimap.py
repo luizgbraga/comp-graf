@@ -1,5 +1,5 @@
 from direct.gui.DirectGui import DirectFrame
-from panda3d.core import CardMaker  # Added missing import
+from panda3d.core import CardMaker
 
 
 class Minimap:
