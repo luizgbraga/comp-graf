@@ -217,19 +217,16 @@ class Player:
         for balloon in self.game.balloonManager.balloons:
             # check distance and direction into a cone range
             playerToBallonVector = balloon["model"].getPos() - self.root.getPos()
-            playerToBallonVector.normalize()
+            norm = playerToBallonVector / playerToBallonVector.length()
             # take dot product to check if the balloon is in front of the player
-            dot_product = playerToBallonVector.dot(self.camera.getQuat().getForward())
-            # print(self.camera.getQuat().getForward().getX(), ' ', self.camera.getQuat().getForward().getY())
-            # print(playerToBallonVector.getX(), ' ', playerToBallonVector.getY())
+            dot_product = norm.dot(self.camera.getQuat().getForward())
             angle = math.acos(dot_product)
-            # print(math.fabs(angle)*180/math.pi)
-            if playerToBallonVector.length() < 2.0 and math.fabs(angle) < math.radians(45):
-                print('hit balloon: ', playerToBallonVector.length())
+            print(math.fabs(angle)*180/math.pi, playerToBallonVector.length(), dot_product)
+            if playerToBallonVector.length() < 50.0 and math.fabs(angle)*180/math.pi < 45:
                 self.game.balloonManager.takeDamage(balloon, 2)
     def checkObstacleCollision(self, playerPos, oldPos):
         """s
-        Check for collision between player position and any obstacles.
+        Check for codllision between player poswwwwwwition and any obstacles.
         :param playerPos: LPoint3f or a tuple (x, y, z)
         :return: True if a collision is detected, otherwise False
         """
