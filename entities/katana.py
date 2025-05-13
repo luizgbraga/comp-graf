@@ -16,7 +16,6 @@ class KatanaManager:
             self.spawnKatana()
 
     def createKatanaModel(self):
-        """Create a textured spinning cube as a katana pickup"""
         box = self.game.createBox(
             self.katana_size,
             self.katana_size * 0.25,

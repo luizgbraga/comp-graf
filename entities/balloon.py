@@ -79,10 +79,10 @@ class BalloonManager:
                 break
 
         color = chosen_color["color"]
-        balloon_model.setColor(color[0], color[1], color[2], color[3])
+        balloon_model.setColor(color[0], color[1], color[2], 1)  # Always fully opaque
 
         for child in balloon_model.findAllMatches("**"):
-            child.setColor(color[0], color[1], color[2], color[3])
+            child.setColor(color[0], color[1], color[2], 1)  # Always fully opaque
 
         angle = random.uniform(0, 2 * math.pi)
 
@@ -111,9 +111,7 @@ class BalloonManager:
         cm = CardMaker("balloon_square")
         cm.setFrame(-0.004, 0.004, -0.004, 0.004)  # Slightly smaller than frame
         balloon_square = marker.attachNewNode(cm.generate())
-        balloon_square.setColor(
-            color[0], color[1], color[2], 0.8
-        )  # Slightly transparent
+        balloon_square.setColor(color[0], color[1], color[2], 1)  # Full opacity
 
         self.balloons.append(
             {
@@ -191,13 +189,12 @@ class BalloonManager:
         current_scale = base_scale * (0.5 + 0.5 * health_ratio)
         balloon["model"].setScale(current_scale)
 
-        opacity = 0.3 + (0.7 * health_ratio)
-
         color = balloon["color"]
-
-        balloon["model"].setColor(color[0], color[1], color[2], opacity)
+        balloon["model"].setColor(
+            color[0], color[1], color[2], 1
+        )  # Always fully opaque
         for child in balloon["model"].findAllMatches("**"):
-            child.setColor(color[0], color[1], color[2], opacity)
+            child.setColor(color[0], color[1], color[2], 1)  # Always fully opaque
         self.balloonHitEffect(balloon)
 
         if balloon["health"] <= 0:

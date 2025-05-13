@@ -15,7 +15,6 @@ class HeartManager:
             self.spawnHeart()
 
     def createHeartModel(self):
-        """Create a textured spinning cube as a heart"""
         box = self.game.createBox(
             self.heart_size, self.heart_size, self.heart_size, (1, 1, 1, 1)
         )
@@ -70,4 +69,3 @@ class HeartManager:
             self.game.player.health += 1
             self.game.hud.addHeart()
             self.spawnHeart()
-            print("Heart collected! Health increased.")
