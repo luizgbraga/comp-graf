@@ -80,10 +80,16 @@ class MonkeyDartGame(ShowBase):
         )  # Doubled the texture tiling to match new size
 
         # Load the tree model
-        self.tree_model = self.loader.loadModel("assets/models/tree.bam")
-        # Load the leaf texture
-        leaf_texture = self.loader.loadTexture("assets/models/leaf.png")
+        self.tree_model = self.loader.loadModel("assets/models/birch_tree.egg")
+        # Load the tree textures
+        leaf_texture = self.loader.loadTexture("assets/models/tex/tree_birch_leaf.png")
+        bark_texture = self.loader.loadTexture("assets/models/tex/tree_bark_65102.jpg")
         self.tree_model.setTexture(leaf_texture)
+        # Apply bark texture to the trunk if the model supports multiple textures
+        if self.tree_model.find("**/trunk").is_empty():
+            self.tree_model.setTexture(
+                bark_texture, 1
+            )  # Apply to second texture stage if available
 
         # Load the sunflower model
         self.sunflower_model = self.loader.loadModel("assets/models/sunflower.bam")
@@ -103,6 +109,8 @@ class MonkeyDartGame(ShowBase):
             tree.setPos(tx, ty, -0.2)  # Moved down slightly
             # Random rotation for variety
             tree.setH(random.uniform(0, 360))
+            # Scale the tree to be larger with random size between 2 and 4
+            tree.setScale(random.uniform(2.0, 4.0))
             self.obstacles.append((tree, 1.5, 5.0))
 
             # Sunflowers
