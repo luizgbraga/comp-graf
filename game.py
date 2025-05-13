@@ -104,7 +104,7 @@ class MonkeyDartGame(ShowBase):
             tree.setPos(tx, ty, -0.2)
             tree.setH(random.uniform(0, 360))
             self.obstacles.append((tree, 1.5, 3))
-            tree.setScale(random.uniform(2.0, 4.0))
+            tree.setScale(random.uniform(0.8, 1.2))  # Reduced scale range
 
             sunflower = self.sunflower_model.copyTo(self.render)
             sx = random.uniform(-75, 75)
