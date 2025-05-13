@@ -24,6 +24,7 @@ class MenuManager:
         self.weapon_menu = None
         self.store_menu = None
         self.rules_menu = None
+        self.pause_menu = None
         self.setupMainMenu()
         self.setupWeaponMenu()
         self.setupStoreMenu()
@@ -193,6 +194,8 @@ class MenuManager:
             self.pause_menu.destroy()
             self.pause_menu = None
     def showPauseMenu(self):
+        if self.weapon_menu:
+            self.weapon_menu.hide()
         self.pause_menu = DirectDialog(
             frameSize=(-0.7, 0.7, -0.7, 0.7),
             fadeScreen=0.4,
@@ -322,6 +325,8 @@ class MenuManager:
     def showMainMenu(self):
         if self.main_menu:
             self.main_menu.show()
+        if self.pause_menu:
+            self.pause_menu.hide()
 
     def hideGameOver(self):
         if self.game_over_menu:

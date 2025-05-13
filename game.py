@@ -36,7 +36,7 @@ class MonkeyDartGame(ShowBase):
 
         # Game variables
         self.score = 0
-        self.coins = 1000
+        self.coins = 0
         self.weaponType = "dart"
         self.owned_weapons = ["dart"]  # Start with dart gun
         self.current_weapon_index = 0
@@ -45,12 +45,8 @@ class MonkeyDartGame(ShowBase):
         self.obstacles = []
         self.setupScene()
         self.player = Player(self)
-        self.balloonManager = BalloonManager(self)
         self.projectileManager = ProjectileManager(self)
         self.screenEffects = Effects(self)
-        self.coinManager = CoinManager(self)
-        self.heartManager = HeartManager(self)
-        self.katanaManager = KatanaManager(self)
         self.menuManager = MenuManager(self)
         self.hud = HUD(self)
         self.minimap = Minimap(self)
@@ -67,6 +63,12 @@ class MonkeyDartGame(ShowBase):
         props = WindowProperties()
         props.setCursorHidden(False)
         self.win.requestProperties(props)
+
+        self.balloonManager = BalloonManager(self)
+        self.coinManager = CoinManager(self)
+        self.heartManager = HeartManager(self)
+        self.katanaManager = KatanaManager(self)
+        # self.upgradeWeapon()
     def pauseGame(self):
         """Pause the game"""
         self.gameState = "paused" if self.gameState == "playing" else "playing"

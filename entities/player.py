@@ -216,16 +216,30 @@ class Player:
         self.swingKatanaAnimation()
         for balloon in self.game.balloonManager.balloons:
             # check distance and direction into a cone range
-            playerToBallonVector = balloon["model"].getPos() - self.root.getPos()
-            norm = playerToBallonVector / playerToBallonVector.length()
-            # take dot product to check if the balloon is in front of the player
-            dot_product = norm.dot(self.camera.getQuat().getForward())
-            angle = math.acos(dot_product)
-            print(math.fabs(angle)*180/math.pi, playerToBallonVector.length(), dot_product)
-            if playerToBallonVector.length() < 50.0 and math.fabs(angle)*180/math.pi < 45:
+            balloonPos = balloon["model"].getPos()
+            balloonPos.setZ(0)
+            playerPos = self.root.getPos()
+            playerPos.setZ(0)
+            to_balloon = balloonPos - playerPos 
+            forward = self.camera.getQuat(self.game.render).getForward()
+            forward.setZ(0)
+            distance = to_balloon.length()
+            forward.normalize()
+            to_balloon.normalize()
+            angle = forward.angleDeg(to_balloon)
+            # print('distance', distance)
+            # print('angle', angle)
+            # print('ballon', balloonPos)
+            # print('player', playerPos)
+            # print('to balloon', to_balloon)
+            # print('forward', forward)
+            # print()
+            # if angle < 22.5:
+                # print("Balloon is within the 45° cone in front of the player")
+            if distance < 5.0 and angle < 30:
                 self.game.balloonManager.takeDamage(balloon, 2)
     def checkObstacleCollision(self, playerPos, oldPos):
-        """s
+        """
         Check for codllision between player poswwwwwwition and any obstacles.
         :param playerPos: LPoint3f or a tuple (x, y, z)
         :return: True if a collision is detected, otherwise False

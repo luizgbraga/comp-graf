@@ -12,6 +12,7 @@ from direct.interval.LerpInterval import LerpColorInterval
 class BalloonManager:
     def __init__(self, game):
         self.game = game
+        self.created = False
         self.balloons = []
         self.balloon_spawn_timer = 0
         self.bob_amplitude = 0.02
@@ -242,6 +243,9 @@ class BalloonManager:
         self.balloon_spawn_timer += dt
 
         # Spawn new balloons
+        # if not self.created:
+            # self.spawnBalloon()
+            # self.created = True
         if self.balloon_spawn_timer > 1.0:  # Every 1 second
             self.balloon_spawn_timer = 0
             if (
