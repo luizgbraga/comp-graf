@@ -209,6 +209,7 @@ class BalloonManager:
             self.game.hud.updateCoins(self.game.coins)
 
             self.removeBalloon(balloon)
+
     def growBalloons(self):
         for balloon in self.balloons:
             # Increase health and max_health
@@ -222,6 +223,7 @@ class BalloonManager:
             else:
                 new_scale = current_scale * 1.1  # 5% larger
             balloon["model"].setScale(new_scale)
+
     def update(self, dt):
         self.balloon_spawn_timer += dt
         self.balloon_growth_timer += dt

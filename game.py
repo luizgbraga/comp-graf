@@ -28,10 +28,8 @@ class MonkeyDartGame(ShowBase):
     def __init__(self):
         ShowBase.__init__(self)
 
-        # Disable the default camera control
         self.disableMouse()
 
-        # Game states
         self.gameState = "menu"  # "menu", "playing", "gameover"
 
         self.score = 0
@@ -49,7 +47,7 @@ class MonkeyDartGame(ShowBase):
         self.hud = HUD(self)
         self.minimap = Minimap(self)
         self.inputController = InputController(self, self.player)
-        self.playerInvulnerable = False  # Player invulnerability state
+        self.playerInvulnerable = False
 
         self.player.initializeCamera()
 
@@ -75,10 +73,8 @@ class MonkeyDartGame(ShowBase):
 
     def setupScene(self):
         cm = CardMaker("ground")
-        cm.setFrame(-80, 80, -80, 80)  # Doubled the size from -40,40 to -80,80
-        cm.setUvRange(
-            (0, 0), (16, 16)
-        )  # Doubled the UV mapping to maintain texture density
+        cm.setFrame(-80, 80, -80, 80)
+        cm.setUvRange((0, 0), (16, 16))
         ground = self.render.attachNewNode(cm.generate())
         ground.setP(-90)
         ground.setZ(-0.5)
@@ -96,7 +92,6 @@ class MonkeyDartGame(ShowBase):
         rock_texture = self.loader.loadTexture("assets/models/rock.png")
         self.rock_model.setTexture(rock_texture)
 
-        # Create trees, sunflowers, and cranberry bushes
         for _ in range(50):
             tree = self.tree_model.copyTo(self.render)
             tx = random.uniform(-75, 75)
@@ -104,7 +99,7 @@ class MonkeyDartGame(ShowBase):
             tree.setPos(tx, ty, -0.2)
             tree.setH(random.uniform(0, 360))
             self.obstacles.append((tree, 1.5, 3))
-            tree.setScale(random.uniform(0.8, 1.2))  # Reduced scale range
+            tree.setScale(random.uniform(0.8, 1.2))
 
             sunflower = self.sunflower_model.copyTo(self.render)
             sx = random.uniform(-75, 75)
@@ -129,7 +124,6 @@ class MonkeyDartGame(ShowBase):
             cranberry.setScale(random.uniform(2.0, 3.0))
             self.obstacles.append((cranberry, 2.0, 1.7))
 
-        # Set up lighting
         ambientLight = AmbientLight("ambient light")
         ambientLight.setColor((0.3, 0.3, 0.3, 1))
         ambientLightNP = self.render.attachNewNode(ambientLight)
@@ -141,7 +135,6 @@ class MonkeyDartGame(ShowBase):
         directionalLightNP.setHpr(45, -45, 0)
         self.render.setLight(directionalLightNP)
 
-        # Set a sky blue background color
         self.setBackgroundColor(0.5, 0.8, 0.9, 1)
 
     def createBox(self, width, depth, height, color=(1, 1, 1, 1)):
@@ -195,59 +188,33 @@ class MonkeyDartGame(ShowBase):
         return box
 
     def updateGame(self, task):
-        """Main game update loop"""
         if self.gameState != "playing":
             return Task.cont
         self.screenEffects.balloonAlert()
-        # Get the time since the last frame
         dt = task.time - task.lastTime if hasattr(task, "lastTime") else 0
         task.lastTime = task.time
 
-        # Let each system update itself
         self.balloonManager.update(dt)
         self.projectileManager.update(dt)
         self.coinManager.checkCollisions(self.player.root.getPos())
         self.heartManager.checkCollisions(self.player.root.getPos())
         self.katanaManager.checkCollisions(self.player.root.getPos())
-        # Random chance to spawn a health box
-        # if random.randint(1, 500) == 1:
-        # self.spawnHealthBox()
         return Task.cont
 
-    # def spawnHealthBox(self):
-    #     health_box = self.createBox(1, 1, 1, color=(0, 1, 0, 1))
-    #     health_box.setPos(random.uniform(-75, 75), random.uniform(-75, 75), 0)
-    #     self.health_boxes.append(health_box)
-    #     health_box.reparentTo(self.render)
-    #     # Add a task to remove the health box after 30 seconds
-    #     self.taskMgr.doMethodLater(
-    #         30, self.removeHealthBox, "remove_health_box", extraArgs=[health_box]
-    #     )
-    # def removeHealthBox(self, health_box):
-    #     """Remove the health box after a delay"""
-    #     if health_box in self.health_boxes:
-    #         health_box.removeNode()
-    #         self.health_boxes.remove(health_box)
-
     def startGame(self):
-        """Start or restart the game"""
         self.gameState = "playing"
         self.menuManager.hideMainMenu()
         self.hud.show()
         self.minimap.show()
 
-        # Reset game variables
         self.score = 0
-        # self.coins = 0  # Removed to maintain coins across plays
         self.weaponType = "dart"
         self.current_weapon_index = 0
 
-        # Reset managers
         self.player.reset()
         self.balloonManager.reset()
         self.projectileManager.reset()
 
-        # Update HUD
         self.hud.updateScore(self.score)
         self.hud.updateCoins(self.coins)
         self.hud.updateWeapon(self.weaponType)
@@ -270,13 +237,13 @@ class MonkeyDartGame(ShowBase):
         self.gameState = "menu"
         self.menuManager.showMainMenu()
         self.menuManager.hidePauseMenu()
-        self.inputController.hideMouseCursor(False)  # Show cursor
+        self.inputController.hideMouseCursor(False)
 
     def upgradeWeapon(self):
         if self.weaponType == "dart" and self.coins >= 50:
             self.coins -= 50
             self.weaponType = "katana"
-            self.owned_weapons.append("katana")  # Add katana to owned weapons
+            self.owned_weapons.append("katana")
             self.player.hasKatana = True
             self.player.switchWeapon(self.weaponType)
 
