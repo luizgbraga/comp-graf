@@ -188,10 +188,12 @@ class MenuManager:
             self.game.inputController.hideMouseCursor(
                 self.game.player.camera_mode == "first-person"
             )  # Hide cursor in first-person
+
     def hidePauseMenu(self):
         if self.pause_menu:
             self.pause_menu.destroy()
             self.pause_menu = None
+
     def showPauseMenu(self):
         self.pause_menu = DirectDialog(
             frameSize=(-0.7, 0.7, -0.7, 0.7),
@@ -228,6 +230,7 @@ class MenuManager:
             parent=self.pause_menu,
             scale=0.07,
         )
+
     def showGameOver(self, score):
         self.game_over_menu = DirectDialog(
             frameSize=(-0.7, 0.7, -0.7, 0.7),

@@ -1,7 +1,7 @@
 from direct.gui.DirectGui import DirectFrame, DirectLabel
 from direct.gui.OnscreenImage import OnscreenImage
-import math
 from panda3d.core import TransparencyAttrib
+
 
 class HUD:
     def __init__(self, game):
@@ -101,6 +101,7 @@ class HUD:
             self.game.menuManager, "store"
         ):
             self.game.menuManager.store.disableUpgradeButton()
+
     def refreshHearts(self):
         # Remove any existing hearts
         for heart in self.heart_icons:
@@ -108,7 +109,7 @@ class HUD:
         self.heart_icons.clear()
 
         spacing = 0.12  # adjust as needed
-        scale = 0.07   # adjust size of heart icon
+        scale = 0.07  # adjust size of heart icon
         base_x = 1 - scale * 1.2  # starting from right edge
         y_pos = 0.9
 
@@ -118,10 +119,11 @@ class HUD:
                 image=self.heart_image_path,
                 pos=(x, 0, y_pos),
                 scale=(scale, 1, scale),
-                parent=self.game.aspect2d
+                parent=self.game.aspect2d,
             )
             heart.setTransparency(TransparencyAttrib.M_alpha)
             self.heart_icons.append(heart)
+
     def addHeart(self):
         self.refreshHearts()
 

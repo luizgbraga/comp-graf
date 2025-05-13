@@ -139,8 +139,10 @@ class Player:
         # Top-down camera (above player)
         self.topDownCamNode = self.root.attachNewNode("top_down_cam")
         self.topDownCamNode.setPos(0, 0, 15)
+
     def takeHealthBox(self, health):
         self.health = max(self.health + health, 3)
+
     def takesDamage(self, damage):
         # when player takes damage he bounces and tilts the camera to simulate a hit
         # Bounce effect
@@ -174,6 +176,7 @@ class Player:
             lambda task: setattr(self.game, "playerInvulnerable", False),
             "reset_invulnerability",
         )
+
     def swingKatanaAnimation(self):
         # self.katana.show()
         self.game.taskMgr.doMethodLater(
@@ -212,6 +215,7 @@ class Player:
             "reset_katana",
         )
         # self.katana.hide()
+
     def swingKatana(self):
         self.swingKatanaAnimation()
         for balloon in self.game.balloonManager.balloons:
@@ -221,9 +225,17 @@ class Player:
             # take dot product to check if the balloon is in front of the player
             dot_product = norm.dot(self.camera.getQuat().getForward())
             angle = math.acos(dot_product)
-            print(math.fabs(angle)*180/math.pi, playerToBallonVector.length(), dot_product)
-            if playerToBallonVector.length() < 50.0 and math.fabs(angle)*180/math.pi < 45:
+            print(
+                math.fabs(angle) * 180 / math.pi,
+                playerToBallonVector.length(),
+                dot_product,
+            )
+            if (
+                playerToBallonVector.length() < 50.0
+                and math.fabs(angle) * 180 / math.pi < 45
+            ):
                 self.game.balloonManager.takeDamage(balloon, 2)
+
     def checkObstacleCollision(self, playerPos, oldPos):
         """s
         Check for codllision between player poswwwwwwition and any obstacles.
@@ -342,7 +354,7 @@ class Player:
         playerPos.z = new_z
         self.root.setPos(playerPos)
         self.root.setZ(new_z)
-                
+
     def switchCamera(self):
         """Cycle through camera modes"""
         if self.camera_mode == "first-person":

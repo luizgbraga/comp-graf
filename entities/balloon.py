@@ -2,11 +2,9 @@ import math
 import random
 
 from direct.gui.DirectGui import DirectFrame
-from panda3d.core import CardMaker
-import math
-from panda3d.core import Point3
 from direct.interval.IntervalGlobal import Func, Parallel, Sequence
 from direct.interval.LerpInterval import LerpColorInterval
+from panda3d.core import CardMaker, Point3
 
 
 class BalloonManager:
@@ -147,13 +145,12 @@ class BalloonManager:
                 * chosen_color["speed_multiplier"],
             }
         )
+
     def balloonHitEffect(self, balloon):
         # make the balloon bob up and down
         # Create a simple effect using small colored cubes that explode outward
         for i in range(8):
-            particle = self.game.createBox(
-                0.1, 0.1, 0.1, balloon["color"]
-            )
+            particle = self.game.createBox(0.1, 0.1, 0.1, balloon["color"])
             particle.reparentTo(self.game.render)
             particle.setPos(balloon["model"].getPos())
             # Random direction
@@ -172,7 +169,12 @@ class BalloonManager:
                         particle,
                         0.5,
                         (1, 0.5, 0, 0),
-                        (balloon["color"][0], balloon["color"][1], balloon["color"][2], 1),
+                        (
+                            balloon["color"][0],
+                            balloon["color"][1],
+                            balloon["color"][2],
+                            1,
+                        ),
                     ),
                 ),
                 Func(particle.removeNode),
@@ -182,17 +184,25 @@ class BalloonManager:
         bobbing_effect = Sequence(
             balloon["model"].posInterval(
                 0.5,
-                Point3(balloon["model"].getX(), balloon["model"].getY(), balloon["model"].getZ() + 0.2),
+                Point3(
+                    balloon["model"].getX(),
+                    balloon["model"].getY(),
+                    balloon["model"].getZ() + 0.2,
+                ),
                 blendType="easeInOut",
             ),
             balloon["model"].posInterval(
                 0.5,
-                Point3(balloon["model"].getX(), balloon["model"].getY(), balloon["model"].getZ()),
+                Point3(
+                    balloon["model"].getX(),
+                    balloon["model"].getY(),
+                    balloon["model"].getZ(),
+                ),
                 blendType="easeInOut",
             ),
         )
         bobbing_effect.loop()
-        
+
     def takeDamage(self, balloon, damage):
         """Handle balloon taking damage"""
         balloon["health"] -= damage
@@ -219,7 +229,6 @@ class BalloonManager:
         self.balloonHitEffect(balloon)
         # Create pop effect
         if balloon["health"] <= 0:
-
             self.game.projectileManager.createBalloonPopEffect(
                 balloon["model"].getPos(), balloon["color"]
             )

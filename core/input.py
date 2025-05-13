@@ -58,7 +58,7 @@ class InputController:
         self.game.accept("mouse3", self.updateKeyMap, ["zoom", True])
         self.game.accept("mouse3-up", self.updateKeyMap, ["zoom", False])
         self.game.accept("escape", self.game.pauseGame, [])
-        
+
     def setupCrosshair(self):
         """Create a crosshair for aiming"""
         self.crosshair_node = NodePath("crosshair")
