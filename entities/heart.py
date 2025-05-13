@@ -1,7 +1,6 @@
-import math
 import random
 
-from direct.interval.IntervalGlobal import Func, Sequence
+from direct.interval.IntervalGlobal import Sequence
 from panda3d.core import Point3, TransparencyAttrib
 
 
@@ -14,8 +13,8 @@ class HeartManager:
         self.heart_texture = self.game.loader.loadTexture("assets/health.png")
         for _ in range(3):
             self.spawnHeart()
+
     def createHeartModel(self):
-        """Create a textured spinning cube as a heart"""
         box = self.game.createBox(
             self.heart_size, self.heart_size, self.heart_size, (1, 1, 1, 1)
         )
@@ -42,12 +41,14 @@ class HeartManager:
         )
         heart_bounce.loop()
 
-        self.hearts.append({
-            "model": heart,
-            "spin": heart_spin,
-            "bounce": heart_bounce,
-            "pos": Point3(x, y, z)
-        })
+        self.hearts.append(
+            {
+                "model": heart,
+                "spin": heart_spin,
+                "bounce": heart_bounce,
+                "pos": Point3(x, y, z),
+            }
+        )
 
     def checkCollisions(self, player_pos):
         for heart in self.hearts[:]:
@@ -68,4 +69,3 @@ class HeartManager:
             self.game.player.health += 1
             self.game.hud.addHeart()
             self.spawnHeart()
-            print("Heart collected! Health increased.")

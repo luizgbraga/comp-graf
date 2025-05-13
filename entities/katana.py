@@ -1,7 +1,6 @@
-import math
 import random
 
-from direct.interval.IntervalGlobal import Func, Sequence
+from direct.interval.IntervalGlobal import Sequence
 from panda3d.core import Point3, TransparencyAttrib
 
 
@@ -17,9 +16,11 @@ class KatanaManager:
             self.spawnKatana()
 
     def createKatanaModel(self):
-        """Create a textured spinning cube as a katana pickup"""
         box = self.game.createBox(
-            self.katana_size, self.katana_size * 0.25, self.katana_size * 0.1, (1, 1, 1, 1)
+            self.katana_size,
+            self.katana_size * 0.25,
+            self.katana_size * 0.1,
+            (1, 1, 1, 1),
         )
         box.setTexture(self.katana_texture)
         box.setTransparency(TransparencyAttrib.M_alpha)
@@ -44,12 +45,14 @@ class KatanaManager:
         )
         katana_bounce.loop()
 
-        self.katanas.append({
-            "model": katana,
-            "spin": katana_spin,
-            "bounce": katana_bounce,
-            "pos": Point3(x, y, z)
-        })
+        self.katanas.append(
+            {
+                "model": katana,
+                "spin": katana_spin,
+                "bounce": katana_bounce,
+                "pos": Point3(x, y, z),
+            }
+        )
 
     def checkCollisions(self, player_pos):
         for katana in self.katanas[:]:
