@@ -68,12 +68,12 @@ class Effects:
                 balloon["model"].getPos(self.game.render)
                 - self.game.player.root.getPos(self.game.render)
             ).length()
-            if dist < 6:  # Trigger distance
+            if dist < 6:
                 has_alert = True
                 break
 
         if has_alert:
-            self.overlay.setColor(1, 1, 1, pulse)  # Alpha modulated by pulse
+            self.overlay.setColor(1, 1, 1, pulse)
             self.overlay.show()
         else:
             self.overlay.hide()

@@ -56,30 +56,25 @@ class InputController:
         self.crosshair_node = NodePath("crosshair")
         self.crosshair_node.reparentTo(self.game.aspect2d)
 
-        # Create horizontal line
         cm = CardMaker("horizontal")
         cm.setFrame(-0.02, 0.02, -0.002, 0.002)
         horizontal = self.crosshair_node.attachNewNode(cm.generate())
-        horizontal.setColor(1, 0, 0, 1)  # Red
+        horizontal.setColor(1, 0, 0, 1)
 
-        # Create vertical line
         cm = CardMaker("vertical")
         cm.setFrame(-0.002, 0.002, -0.02, 0.02)
         vertical = self.crosshair_node.attachNewNode(cm.generate())
-        vertical.setColor(1, 0, 0, 1)  # Red
+        vertical.setColor(1, 0, 0, 1)
 
-        # Create dot in the middle
         cm = CardMaker("dot")
         cm.setFrame(-0.004, 0.004, -0.004, 0.004)
         dot = self.crosshair_node.attachNewNode(cm.generate())
-        dot.setColor(1, 1, 1, 1)  # White
+        dot.setColor(1, 1, 1, 1)
 
-        # Hide initially
         self.crosshair_node.hide()
 
     def updateKeyMap(self, key, value):
         self.keyMap[key] = value
-        # Handle one-shot actions
         if key == "shoot" and value and self.game.gameState == "playing":
             if self.player.currentWeapon == "dart":
                 self.game.projectileManager.shootProjectile()
