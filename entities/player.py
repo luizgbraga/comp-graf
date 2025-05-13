@@ -181,7 +181,7 @@ class Player:
             balloonPos.setZ(0)
             playerPos = self.root.getPos()
             playerPos.setZ(0)
-            to_balloon = balloonPos - playerPos 
+            to_balloon = balloonPos - playerPos
             forward = self.camera.getQuat(self.game.render).getForward()
             forward.setZ(0)
             distance = to_balloon.length()
@@ -196,7 +196,7 @@ class Player:
             # print('forward', forward)
             # print()
             # if angle < 22.5:
-                # print("Balloon is within the 45° cone in front of the player")
+            # print("Balloon is within the 45° cone in front of the player")
             if distance < 5.0 and angle < 30:
                 self.game.balloonManager.takeDamage(balloon, 2)
 

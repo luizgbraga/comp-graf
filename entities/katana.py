@@ -72,4 +72,3 @@ class KatanaManager:
             self.game.player.hasKatana = True
             self.game.player.switchWeapon("katana")
             self.game.owned_weapons.append("katana")
-

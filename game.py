@@ -63,7 +63,7 @@ class MonkeyDartGame(ShowBase):
         self.coinManager = CoinManager(self)
         self.heartManager = HeartManager(self)
         self.katanaManager = KatanaManager(self)
-        # self.upgradeWeapon()
+
     def pauseGame(self):
         self.gameState = "paused" if self.gameState == "playing" else "playing"
         if self.gameState == "paused":
