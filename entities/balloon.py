@@ -228,8 +228,8 @@ class BalloonManager:
 
         # Spawn new balloons
         # if not self.created:
-            # self.spawnBalloon()
-            # self.created = True
+        # self.spawnBalloon()
+        # self.created = True
         if self.balloon_spawn_timer > 1.0:  # Every 1 second
             self.balloon_spawn_timer = 0
             if len(self.balloons) < 10 + self.game.score // 10:
