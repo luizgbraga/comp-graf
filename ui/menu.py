@@ -24,6 +24,7 @@ class MenuManager:
         self.weapon_menu = None
         self.store_menu = None
         self.rules_menu = None
+        self.pause_menu = None
         self.setupMainMenu()
         self.setupWeaponMenu()
         self.setupStoreMenu()
@@ -70,7 +71,6 @@ class MenuManager:
             scale=0.12,
         )
 
-        # Main menu buttons
         button_spacing = 0.15
         start_y = 0.2
         self.createButton(
@@ -102,7 +102,6 @@ class MenuManager:
             scale=0.08,
         )
 
-        # Controls section
         controls_text = (
             "Controls:\n"
             "• W, A, S, D - Move\n"
@@ -144,16 +143,13 @@ class MenuManager:
             scale=0.07,
         )
 
-        # Hide initially
         self.weapon_menu.hide()
 
     def updateWeaponButtons(self):
-        # Remove old buttons
         for button in self.weaponButtons.values():
             button.destroy()
         self.weaponButtons.clear()
 
-        # Create new buttons for owned weapons
         y_pos = 0.1
         for weapon in self.game.owned_weapons:
             button = DirectButton(
@@ -180,14 +176,14 @@ class MenuManager:
         if self.game.gameState == "playing":
             self.updateWeaponButtons()
             self.weapon_menu.show()
-            self.game.inputController.hideMouseCursor(False)  # Show cursor
+            self.game.inputController.hideMouseCursor(False)
 
     def hideWeaponMenu(self):
         self.weapon_menu.hide()
         if self.game.gameState == "playing":
             self.game.inputController.hideMouseCursor(
                 self.game.player.camera_mode == "first-person"
-            )  # Hide cursor in first-person
+            )
 
     def hidePauseMenu(self):
         if self.pause_menu:
@@ -195,6 +191,8 @@ class MenuManager:
             self.pause_menu = None
 
     def showPauseMenu(self):
+        if self.weapon_menu:
+            self.weapon_menu.hide()
         self.pause_menu = DirectDialog(
             frameSize=(-0.7, 0.7, -0.7, 0.7),
             fadeScreen=0.4,
@@ -325,6 +323,8 @@ class MenuManager:
     def showMainMenu(self):
         if self.main_menu:
             self.main_menu.show()
+        if self.pause_menu:
+            self.pause_menu.hide()
 
     def hideGameOver(self):
         if self.game_over_menu:
@@ -339,7 +339,6 @@ class MenuManager:
             frameColor=MENU_BG_COLOR,
         )
 
-        # Title and coins
         self.createLabel(
             "Store",
             (0, 0, 0.5),
@@ -354,12 +353,10 @@ class MenuManager:
         )
         self.store_coin_label["text_fg"] = COIN_COLOR
 
-        # Weapon display section
         weapon_spacing = 0.4
         dart_props = self.game.projectileManager.weaponProperties["dart"]
         katana_props = self.game.projectileManager.weaponProperties["katana"]
 
-        # Dart Gun Info
         self.createLabel(
             "Dart Gun",
             (-weapon_spacing, 0, 0.2),
@@ -373,7 +370,6 @@ class MenuManager:
             scale=0.05,
         )
 
-        # Katana Info
         self.createLabel(
             "Katana",
             (weapon_spacing, 0, 0.2),
@@ -387,7 +383,6 @@ class MenuManager:
             scale=0.05,
         )
 
-        # Buy button
         self.buy_katana_button = self.createButton(
             "Buy Katana (50 coins)",
             (0, 0, -0.2),
@@ -396,7 +391,6 @@ class MenuManager:
             scale=0.07,
         )
 
-        # Back button
         self.createButton(
             "Back",
             (0, 0, -0.4),
@@ -408,7 +402,6 @@ class MenuManager:
         self.store_menu.hide()
 
     def setupRulesMenu(self):
-        """Create the rules and mechanics menu UI"""
         self.rules_menu = DirectDialog(
             frameSize=(-0.7, 0.7, -0.7, 0.7),
             fadeScreen=0.4,
