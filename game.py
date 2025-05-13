@@ -34,7 +34,6 @@ class MonkeyDartGame(ShowBase):
         # Game states
         self.gameState = "menu"  # "menu", "playing", "gameover"
 
-        # Game variables
         self.score = 0
         self.coins = 1000
         self.weaponType = "dart"
